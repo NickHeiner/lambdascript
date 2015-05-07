@@ -164,7 +164,30 @@ let ``lex - different identifier``() =
         FuncArrow;
         Literal "1"
     ]
+    
     Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - sample``() = 
+    let actual = bottomUpParse [
+                                Lambda;
+                                Identifier "x";
+                                FuncArrow;
+                                Literal "1"
+                               ]
+    let expected = Some sampleTree
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - invalid input``() = 
+    let actual = bottomUpParse [
+                                Lambda;
+                                Identifier "f";
+                                Identifier "illegalDuplicatedIdentifier";
+                                FuncArrow;
+                                Literal "1"
+                               ]
+    Assert.AreEqual(None, actual)
 (* end tests *)
 
 [<EntryPoint>]
