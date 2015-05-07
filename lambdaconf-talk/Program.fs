@@ -7,7 +7,9 @@ let GetFileContents filePath =
     File.ReadAllLines (filePath, System.Text.Encoding.UTF8) |> Array.toList
 
 let tokenize =
-    List.map (fun (line : string) -> line.Split ' ' |> Array.toList) >>
+    List.map (fun (line : string) -> 
+        line.Split ' ' |> Array.toList |> List.filter ((<>) "")
+    ) >>
     List.concat
 
 type LexSymbol = Lambda | Identifier of string | FuncArrow | Literal of string 
@@ -22,6 +24,8 @@ let lex (tokens : list<string>) =
     ) tokens
 
 (*
+    Our grammar is:
+
     Expression -> FuncDeclaration | Literal
     FuncDeclaration -> Lambda Identifier FuncArrow Expression
 *)
@@ -114,6 +118,28 @@ let bottomUpParse lexSymbols =
             | Some (nextParseStack, nextInput) -> parseStep nextParseStack nextInput
 
     parseStep [] input
+
+(* lol I wish I knew how to have code in separate files haha *)
+open NUnit.Framework
+
+[<Test>]
+let ``tokenize - no input``() = 
+    let actual = tokenize []
+    let expected = []
+    Assert.AreEqual(actual, expected)
+    
+[<Test>]
+let ``tokenize - some input``() = 
+    let actual = tokenize ["λ x -> 1"]
+    let expected = ["λ"; "x"; "->"; "1"]
+    Assert.AreEqual(actual, expected)
+
+[<Test>]
+let ``tokenize - many spaces``() = 
+    let actual = tokenize ["λ     x  ->   1"]
+    let expected = ["λ"; "x"; "->"; "1"]
+    Assert.AreEqual(actual, expected)
+(* end tests *)
 
 [<EntryPoint>]
 let rec main argv = 
