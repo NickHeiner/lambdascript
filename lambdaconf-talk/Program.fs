@@ -16,6 +16,7 @@ let lex (tokens : seq<string>) =
         match token with
         | "λ" -> Lambda 
         | "->" -> FuncArrow 
+        (* How do I parseInt? How do I use regex? *)
         | "1" -> Literal "1"
         | _ -> Identifier token
     ) tokens
@@ -24,7 +25,7 @@ type GrammarEntry =
     | Expression
     | FuncDeclaration
     | Terminal of LexSymbol
-
+   
 (* Is there some way to enforce that GrammarEntry may not be a Terminal? *)
 type GrammarRule = (GrammarEntry * List<GrammarEntry>)
 
@@ -32,11 +33,32 @@ type GrammarRule = (GrammarEntry * List<GrammarEntry>)
     Expression -> FuncDeclaration | Literal
     FuncDeclaration -> Lambda Identifier FuncArrow Expression
 *)
+type ParseTree = Leaf of GrammarEntry | Node of GrammarEntry * List<ParseTree>
 let getMatchingRule = function
-    | [Terminal (Literal lit)] -> Some Expression
-    | [Terminal Lambda; Terminal (Identifier id); Terminal FuncArrow; Expression] -> Some FuncDeclaration
+    | [Terminal (Literal lit)] -> 
+        Some (Node (Expression, [Leaf (Terminal (Literal lit))]))
+    | [Terminal Lambda; Terminal (Identifier id); Terminal FuncArrow; Expression e] -> 
+        Some (Node (FuncDeclaration, [
+                        Leaf (Terminal Lambda);
+                        Leaf (Terminal (Identifier id));
+                        Leaf (Terminal FuncArrow);
+                        Node (Expression, e)
+        ]))
     | _ -> None
 
+let sampleTree = 
+    Node (Expression, [
+            Node (FuncDeclaration, [
+                    Leaf (Terminal Lambda);
+                    Leaf (Terminal (Identifier "x"));
+                    Leaf (Terminal FuncArrow);
+                    Node (Expression, [
+                            Leaf (Terminal (Literal "1"))
+                    ])
+            ])
+    ])
+
+(* 
 let parse lexSymbols =
     let grammarEntries = Seq.map Terminal lexSymbols
     let rec parseRec unusedSymbols parseStack =
@@ -52,6 +74,9 @@ let parse lexSymbols =
             | head::tail -> parseReq (Seq.tail lexSymbols) (parseStack::(Seq.head lexSymbols))
         | Some grammarEntry -> parseReq
     parseRec (Seq.tail grammarEntries) [(Seq.head grammarEntries)]
+*)
+
+
 
 [<EntryPoint>]
 let main argv = 
