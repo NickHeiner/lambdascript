@@ -21,42 +21,40 @@ let lex (tokens : seq<string>) =
         | _ -> Identifier token
     ) tokens
 
-type GrammarEntry = 
-    | Expression
-    | FuncDeclaration
-    | Terminal of LexSymbol
-   
-(* Is there some way to enforce that GrammarEntry may not be a Terminal? *)
-type GrammarRule = (GrammarEntry * List<GrammarEntry>)
-
 (*
     Expression -> FuncDeclaration | Literal
     FuncDeclaration -> Lambda Identifier FuncArrow Expression
 *)
-type ParseTree = Leaf of GrammarEntry | Node of GrammarEntry * List<ParseTree>
-let getMatchingRule = function
-    | [Terminal (Literal lit)] -> 
-        Some (Node (Expression, [Leaf (Terminal (Literal lit))]))
-    | [Terminal Lambda; Terminal (Identifier id); Terminal FuncArrow; Expression e] -> 
-        Some (Node (FuncDeclaration, [
-                        Leaf (Terminal Lambda);
-                        Leaf (Terminal (Identifier id));
-                        Leaf (Terminal FuncArrow);
-                        Node (Expression, e)
-        ]))
-    | _ -> None
+type ParseTree = 
+    | Leaf of LexSymbol 
+    | Expression of List<ParseTree>
+    | FuncDeclaration of List<ParseTree>
 
 let sampleTree = 
-    Node (Expression, [
-            Node (FuncDeclaration, [
-                    Leaf (Terminal Lambda);
-                    Leaf (Terminal (Identifier "x"));
-                    Leaf (Terminal FuncArrow);
-                    Node (Expression, [
-                            Leaf (Terminal (Literal "1"))
-                    ])
-            ])
-    ])
+    Expression [
+        FuncDeclaration [
+            Leaf Lambda; 
+            Leaf (Identifier "x"); 
+            Leaf FuncArrow; 
+            Expression [
+                Leaf (Literal "1")
+            ]
+        ]
+    ]
+
+let getMatchingRule = function
+    | [Leaf (Literal lit)] -> 
+        Some (Expression [Leaf (Literal "1")])
+    | [Leaf Lambda; Leaf (Identifier id); Leaf FuncArrow; Expression e] -> 
+        Some (FuncDeclaration [
+                Leaf Lambda; 
+                Leaf (Identifier id); 
+                Leaf FuncArrow; 
+                Expression e
+            ]
+       )
+    | [FuncDeclaration children] -> Some (Expression [FuncDeclaration children])
+    | _ -> None
 
 (* 
 let parse lexSymbols =
