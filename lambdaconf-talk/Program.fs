@@ -61,16 +61,23 @@ let stackEmpty = []
 let stackPush list elem = elem::list
 let stackPop list = List.head list, List.tail list
 
+(* Is there a real log system in f#? *)
+let log label obj = printfn "%s %A" label obj
+
 let bottomUpParse lexSymbols = 
     let input = List.map Leaf lexSymbols
+    log "parsing" input
     (* Keep popping from the stack until we find a handle. *)
     let tryFindHandle parseStack =
         let rec tryFindHandleRec (possibleHandle : ParseTree list) (restOfStack : ParseTree list) : ParseTree list option =
+            log "checking to see if this is a handle" possibleHandle;
             match getMatchingRule possibleHandle with
             (* If we found something *)
-            | Some parseTree -> Some (List.append restOfStack [parseTree])
+            (* We were searching backwards through the parse stack, so before we return it, we need to re-reverse it. *)
+            | Some parseTree -> Some (parseTree::restOfStack)
             (* Nothing found *)
             | None -> 
+                log "no handle found" possibleHandle;
                 match restOfStack with
                 (* There are no handles on the parseStack right now *)
                 | [] -> None
@@ -79,13 +86,15 @@ let bottomUpParse lexSymbols =
                     let nextHandlePartToTry, remainingStack = stackPop restOfStack
                     tryFindHandleRec (List.append possibleHandle [nextHandlePartToTry]) remainingStack
 
-        tryFindHandleRec [] parseStack
+        tryFindHandleRec [] (List.rev parseStack)
     
     let shift (parseStack : 'a list) (input : 'a list) : ('a list * 'a list) option =
         match input with
         (* If we want to shift, but we have no more inputs, then our input is not valid. *)
         | [] -> None
-        | head::tail -> Some ((List.append parseStack [head]), tail)
+        | head::tail -> 
+            log "shifting on to parse stack" head;
+            Some ((List.append parseStack [head]), tail)
 
     (* When we think we may be done, we need to know if the state we wound up in is valid. *)
     let acceptableEndState = function
@@ -105,35 +114,18 @@ let bottomUpParse lexSymbols =
             | Some (nextParseStack, nextInput) -> parseStep nextParseStack nextInput
 
     parseStep [] input
-            
-(* 
-let parse lexSymbols =
-    let grammarEntries = Seq.map Terminal lexSymbols
-    let rec parseRec unusedSymbols parseStack =
-        let matchingRule = getMatchingRule parseStack
-        match matchingRule with
-        | None -> match unusedSymbols with
-            | [] -> match parseStack with
-                (* If we just have an expression, then we are in a valid end state *)
-                | [Expression] -> true
-                (* If we have anything else, then the input is not valid. *)
-                | _ -> false
-            (* Shift *)
-            | head::tail -> parseReq (Seq.tail lexSymbols) (parseStack::(Seq.head lexSymbols))
-        | Some grammarEntry -> parseReq
-    parseRec (Seq.tail grammarEntries) [(Seq.head grammarEntries)]
-*)
-
-
 
 [<EntryPoint>]
-let main argv = 
+let rec main argv = 
     let entryPoint = argv.[0]
     printfn "Entry point file: %s" entryPoint
     
-    GetFileContents entryPoint |> 
-        tokenize |>
-        lex |>
-        printfn "%A"
+    let result = 
+        GetFileContents entryPoint 
+            |> tokenize 
+            |> lex 
+            |> bottomUpParse
 
-    0 // return an integer exit code
+    match result with
+    | Some any -> printfn "Compilation complete: %A" any; 0
+    | None -> printfn "Invalid input"; 1
