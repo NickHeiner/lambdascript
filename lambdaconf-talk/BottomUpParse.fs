@@ -7,11 +7,11 @@ open Grammar
 let getMatchingRule = function
     | [Leaf (Literal lit)] -> 
         Some (Expression [Leaf (Literal "1")])
-    | [Leaf Lambda; Leaf (Identifier id); Leaf FuncArrow; Expression e] -> 
+    | [Leaf Lambda; Leaf (Identifier id); Leaf FuncDot; Expression e] -> 
         Some (FuncDeclaration [
                 Leaf Lambda; 
                 Leaf (Identifier id); 
-                Leaf FuncArrow; 
+                Leaf FuncDot; 
                 Expression e
             ]
        )

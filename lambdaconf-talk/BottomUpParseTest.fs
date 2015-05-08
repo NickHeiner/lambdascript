@@ -10,7 +10,7 @@ let sampleTree =
         FuncDeclaration [
             Leaf Lambda; 
             Leaf (Identifier "x"); 
-            Leaf FuncArrow; 
+            Leaf FuncDot; 
             Expression [
                 Leaf (Literal "1")
             ]
@@ -22,7 +22,7 @@ let ``bottomUpParse - sample``() =
     let actual = bottomUpParse [
                                 Lambda;
                                 Identifier "x";
-                                FuncArrow;
+                                FuncDot;
                                 Literal "1"
                                ]
     let expected = Some sampleTree
@@ -34,7 +34,7 @@ let ``bottomUpParse - invalid input``() =
                                 Lambda;
                                 Identifier "f";
                                 Identifier "illegalDuplicatedIdentifier";
-                                FuncArrow;
+                                FuncDot;
                                 Literal "1"
                                ]
     Assert.AreEqual(None, actual)

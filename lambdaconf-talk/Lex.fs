@@ -1,13 +1,24 @@
 ﻿module Lex
 
-type LexSymbol = Lambda | Identifier of string | FuncArrow | Literal of string 
+type LexSymbol = 
+    | Lambda 
+    | Identifier of string 
+    | FuncDot
+    | Literal of string 
+    | OpenAngleBracket
+    | CloseAngleBracket
+    | OpenSquareBracket
+    | CloseSquareBracket 
+    | Is
+    | And
+    | Or
+    | RegexLiteral of string
+
 let lex (tokens : list<string>) = 
     List.map (fun token -> 
         match token with
         | "λ" -> Lambda 
-        | "->" -> FuncArrow 
-        (* How do I parseInt? How do I use regex? *)
-        | "1" -> Literal "1"
+        | "." -> FuncDot
         | _ -> Identifier token
     ) tokens
 
