@@ -1,15 +1,15 @@
 ﻿λ isPalindrome str .
-	str is "" or (
+	str is "" or <
 		str[/^(.)/] is str[/.*(.)$/] 
 		and isPalindrome str[/^.(.*)./]
-	)
+	>
 
-print (isPalindrome "racecar")
-print (isPalindrome "not a palindrome")
+print <isPalindrome "racecar">
+print <isPalindrome "not a palindrome">
 #/
 
 Grammar: 
-	Expr -> FuncDecl | FuncInvocation | StringLookup | Boolean | ( Expr ) | identifier | string
+	Expr -> FuncDecl | FuncInvocation | StringLookup | Boolean | < Expr > | identifier | string
 	FuncDecl -> lambda funcName identifier funcDot Expr
 	FuncInvocation -> funcName Expr
 	StringLookup -> identifier [ regex ]
