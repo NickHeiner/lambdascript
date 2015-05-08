@@ -23,7 +23,6 @@ let stackEmpty = []
 let stackPush list elem = elem::list
 let stackPop list = List.head list, List.tail list
 
-
 let bottomUpParse lexSymbols = 
     let input = List.map Leaf lexSymbols
     log "parsing" input
