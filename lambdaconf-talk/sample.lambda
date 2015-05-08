@@ -1,1 +1,16 @@
-﻿λ x -> 1
+﻿λ isPalindrome str .
+	str is "" or
+		str[/^(.)/] is str[/.*(.)$/] and isPalindrome str[/^.(.*)./]
+
+#/
+
+Grammar: 
+Expr -> FuncDecl | FuncInvocation | Unpack | Boolean
+FuncDecl -> lambda funcName identifier funcDot Expr
+FuncInvocation -> funcName identifier
+Unpack -> unpack identifier as identifier charOnString identifier stringOnChar identifier { Expr }
+Boolean -> identifier is identifier | Boolean or Boolean | Boolean and Boolean 
+
+Previously considered:
+	first, rest, last = /(.)(.*)(.)/
+/#
