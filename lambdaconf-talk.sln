@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "lambdaconf-talk", "lambdaconf-talk\lambdaconf-talk.fsproj", "{86FC5E08-DA3D-409C-AF7B-3CC51642CAFE}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tutorial1", "Tutorial1\Tutorial1.fsproj", "{0239C9E7-EE8C-46F5-9018-FE52E1351AE5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{86FC5E08-DA3D-409C-AF7B-3CC51642CAFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86FC5E08-DA3D-409C-AF7B-3CC51642CAFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86FC5E08-DA3D-409C-AF7B-3CC51642CAFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0239C9E7-EE8C-46F5-9018-FE52E1351AE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0239C9E7-EE8C-46F5-9018-FE52E1351AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0239C9E7-EE8C-46F5-9018-FE52E1351AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0239C9E7-EE8C-46F5-9018-FE52E1351AE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
