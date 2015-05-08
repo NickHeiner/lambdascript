@@ -57,7 +57,12 @@
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
+    <Compile Include="Util.fs" />
     <Compile Include="ReadFile.fs" />
+    <Compile Include="Tokenize.fs" />
+    <Compile Include="Lex.fs" />
+    <Compile Include="Grammar.fs" />
+    <Compile Include="BottomUpParse.fs" />
     <Compile Include="MainTest.fs" />
     <Compile Include="Program.fs" />
     <None Include="sample.lambda" />
