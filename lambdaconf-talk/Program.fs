@@ -1,10 +1,7 @@
 ﻿// Learn more about F# at http://fsharp.org
 // See the 'F# Tutorial' project for more help.
 
-open System.IO
-
-let GetFileContents filePath = 
-    File.ReadAllLines (filePath, System.Text.Encoding.UTF8) |> Array.toList
+open ReadFile
 
 let tokenize =
     List.map (fun (line : string) -> 
