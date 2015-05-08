@@ -1,16 +1,18 @@
 ﻿λ isPalindrome str .
-	str is "" or
-		str[/^(.)/] is str[/.*(.)$/] and isPalindrome str[/^.(.*)./]
+	str is "" or (
+		str[/^(.)/] is str[/.*(.)$/] 
+		and isPalindrome str[/^.(.*)./]
+	)
 
+print (isPalindrome "racecar")
+print (isPalindrome "not a palindrome")
 #/
 
 Grammar: 
-Expr -> FuncDecl | FuncInvocation | Unpack | Boolean
-FuncDecl -> lambda funcName identifier funcDot Expr
-FuncInvocation -> funcName identifier
-Unpack -> unpack identifier as identifier charOnString identifier stringOnChar identifier { Expr }
-Boolean -> identifier is identifier | Boolean or Boolean | Boolean and Boolean 
+	Expr -> FuncDecl | FuncInvocation | StringLookup | Boolean | ( Expr ) | identifier | string
+	FuncDecl -> lambda funcName identifier funcDot Expr
+	FuncInvocation -> funcName Expr
+	StringLookup -> identifier [ regex ]
+	Boolean -> Expr is Expr | Boolean or Boolean | Boolean and Boolean 
 
-Previously considered:
-	first, rest, last = /(.)(.*)(.)/
 /#
