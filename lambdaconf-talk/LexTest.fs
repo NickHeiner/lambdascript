@@ -45,3 +45,11 @@ let ``lex - FuncDot`` () =
 [<Test>]
 let ``lex - Literal`` () =
     Assert.AreEqual([Literal "racecar"], lex ["\"racecar\""])
+
+[<Test>]
+let ``lex - OpenAngleBracket`` () =
+    Assert.AreEqual([OpenAngleBracket], lex ["<"])
+
+[<Test>]
+let ``lex - CloseAngleBracket`` () =
+    Assert.AreEqual([CloseAngleBracket], lex [">"])

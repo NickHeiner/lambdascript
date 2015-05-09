@@ -26,6 +26,8 @@ let lex (tokens : list<string>) =
         match token with
         | "λ" -> Lambda 
         | "." -> FuncDot
+        | "<" -> OpenAngleBracket
+        | ">" -> CloseAngleBracket
         | FirstRegexGroup "\"(.*)\"" str -> Literal str
         | _ -> Identifier token
     ) tokens
