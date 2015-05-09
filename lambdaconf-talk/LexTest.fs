@@ -53,3 +53,11 @@ let ``lex - OpenAngleBracket`` () =
 [<Test>]
 let ``lex - CloseAngleBracket`` () =
     Assert.AreEqual([CloseAngleBracket], lex [">"])
+
+[<Test>]
+let ``lex - OpenSquareBracket`` () =
+    Assert.AreEqual([OpenSquareBracket], lex ["["])
+
+[<Test>]
+let ``lex - CloseSquareBracket`` () =
+    Assert.AreEqual([CloseSquareBracket], lex ["]"])

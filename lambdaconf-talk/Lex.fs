@@ -28,6 +28,8 @@ let lex (tokens : list<string>) =
         | "." -> FuncDot
         | "<" -> OpenAngleBracket
         | ">" -> CloseAngleBracket
+        | "[" -> OpenSquareBracket
+        | "]" -> CloseSquareBracket
         | FirstRegexGroup "\"(.*)\"" str -> Literal str
         | _ -> Identifier token
     ) tokens
