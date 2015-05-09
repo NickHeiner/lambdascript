@@ -125,10 +125,16 @@ let ``bottomUpParse - nested function invocation`` () =
     let expected = 
         Expression [
             FuncInvocation [
-                Leaf (Identifier "print")
-                FuncInvocation [
-                    Leaf (Identifier "isPalindrome")
-                    Leaf (Literal "racecar")
+                Expression [Leaf (Identifier "print")]
+                Expression [
+                    Leaf OpenAngleBracket
+                    Expression [
+                        FuncInvocation [
+                            Expression [Leaf (Identifier "isPalindrome")]
+                            Expression [Leaf (Literal "racecar")]
+                        ]
+                    ]
+                    Leaf CloseAngleBracket
                 ]
             ]
         ]
