@@ -5,27 +5,32 @@ open Grammar
 open BottomUpParse
 open NUnit.Framework
 
-let sampleTree = 
-    Expression [
-        FuncDeclaration [
-            Leaf Lambda; 
-            Leaf (Identifier "x"); 
-            Leaf FuncDot; 
-            Expression [
-                Leaf (Literal "1")
-            ]
-        ]
-    ]
-
 [<Test>]
-let ``bottomUpParse - sample`` () = 
-    let actual = bottomUpParse [
-                                Lambda;
-                                Identifier "x";
-                                FuncDot;
-                                Literal "always return this string"
-                               ]
-    let expected = Some sampleTree
+let ``bottomUpParse - function declaration`` () = 
+    (* Parsing
+        λ constantFn arg . arg
+    *)
+    let actual = 
+        bottomUpParse [
+            Lambda
+            Identifier "constantFn"
+            Identifier "arg"
+            FuncDot
+            Identifier "arg"
+        ]
+    let expected = 
+        Expression [
+            FuncDeclaration [
+                Leaf Lambda
+                Leaf (Identifier "x")
+                Leaf (Identifier "arg")
+                Leaf FuncDot
+                Expression [
+                    Leaf (Identifier "arg")
+                ]
+            ]
+        ] 
+        |> Some
     Assert.AreEqual(expected, actual)
 
 [<Test>]
