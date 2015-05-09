@@ -73,3 +73,7 @@ let ``lex - And`` () =
 [<Test>]
 let ``lex - Or`` () =
     Assert.AreEqual([Or], lex ["or"])
+
+[<Test>]
+let ``lex - RegexLiteral`` () =
+    Assert.AreEqual([RegexLiteral ".*"], lex ["/.*/"])

@@ -16,7 +16,7 @@ type LexSymbol =
     | Or
     | RegexLiteral of string
 
-let lex (tokens : list<string>) = 
+let lex = 
     // From http://fsharpforfunandprofit.com/posts/convenience-active-patterns/
     let (|FirstRegexGroup|_|) pattern input =
        let m = Regex.Match(input,pattern) 
@@ -34,7 +34,8 @@ let lex (tokens : list<string>) =
         | "and" -> And
         | "or" -> Or
         | FirstRegexGroup "\"(.*)\"" str -> Literal str
+        | FirstRegexGroup "/(.*)/" regexContents -> RegexLiteral regexContents
         | _ -> Identifier token
-    ) tokens
+    )
 
 
