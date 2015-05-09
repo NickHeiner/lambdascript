@@ -96,9 +96,11 @@ let ``bottomUpParse - bracketed function invocation`` () =
     let expected = 
         Expression [
             Leaf (OpenAngleBracket)
-            FuncInvocation [
-                Expression [Leaf (Identifier "isPalindrome")]
-                Expression [Leaf (Literal "racecar")]
+            Expression [
+                FuncInvocation [
+                    Expression [Leaf (Identifier "isPalindrome")]
+                    Expression [Leaf (Literal "racecar")]
+                ]
             ]
             Leaf (CloseAngleBracket)
         ]
