@@ -9,10 +9,12 @@ let getMatchingRule = function
     | [Leaf (Literal lit)] as literalLeaf -> Some (Expression literalLeaf)
     | [FuncDeclaration children] as funcDecl -> Some (Expression funcDecl)
     | [FuncInvocation children] as funcInvoke -> Some (Expression funcInvoke)
+    | [Boolean children] as boolean -> Some (Expression boolean)
     | [Leaf Lambda; Leaf (FuncName funcName); Leaf (ArgName arg); Leaf FuncDot; Expression e] as children -> 
         Some (FuncDeclaration children)
     | [Expression expr; Expression expr'] as expressions -> Some (FuncInvocation expressions)
     | [Leaf OpenAngleBracket; Expression expr; Leaf CloseAngleBracket] as children -> Some (Expression children)
+    | [Expression leftHandSide; Leaf Equality; Expression rightHandSide] as children -> Some (Boolean children)
     | _ -> None
 
 (* What is the right way to do this? And is it just a builtin? *)

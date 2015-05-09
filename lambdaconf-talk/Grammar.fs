@@ -9,7 +9,7 @@ Grammar:
 	FuncDecl -> lambda funcName argName funcDot Expr
 	FuncInvocation -> Expr Expr
 	StringLookup -> Expr [ regex ]
-	Boolean -> Expr is Expr | Boolean or Boolean | Boolean and Boolean 
+	Boolean -> Expr equality Expr | Boolean or Boolean | Boolean and Boolean 
 
 *)
 
