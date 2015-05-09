@@ -11,14 +11,14 @@ let ``tokenize - no input`` () =
     
 [<Test>]
 let ``tokenize - some input`` () = 
-    let actual = tokenize ["λ x . 1"]
-    let expected = ["λ"; "x"; "."; "1"]
+    let actual = tokenize ["λ @x :ignoredArg . 1"]
+    let expected = ["λ"; "@x"; ":ignoredArg"; "."; "1"]
     Assert.AreEqual(expected, actual)
 
 [<Test>]
 let ``tokenize - many spaces`` () = 
-    let actual = tokenize ["λ     x  .   1"]
-    let expected = ["λ"; "x"; "."; "1"]
+    let actual = tokenize ["λ     @x :ignoredArg  .   1"]
+    let expected = ["λ"; "@x"; ":ignoredArg"; "."; "1"]
     Assert.AreEqual(expected, actual)
 
 [<Test>]
@@ -29,12 +29,12 @@ let ``tokenize - function invocation`` () =
 
 [<Test>]
 let ``tokenize - sample.lambda`` () =
-    let actual = tokenize [ "λ isPalindrome str ."
+    let actual = tokenize [ "λ @isPalindrome :str ."
                             "str is \"\" or <"
                             "str[/^(.)/] is str[/.*(.)$/]"
                             "and isPalindrome str[/^.(.*)./]"
                             ">"]
-    let expected = ["λ"; "isPalindrome"; "str"; "."; "str"; "is"; "\"\""; "or"; "<";
+    let expected = ["λ"; "@isPalindrome"; ":str"; "."; "str"; "is"; "\"\""; "or"; "<";
         "str"; "["; "/^(.)/"; "]"; "is"; "str"; "["; "/.*(.)$/"; "]"; "and"; "isPalindrome";
         "str"; "["; "/^.(.*)./"; "]"; ">"]
 

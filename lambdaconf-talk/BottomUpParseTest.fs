@@ -5,37 +5,36 @@ open Grammar
 open BottomUpParse
 open NUnit.Framework
 
-let sampleTree = 
-    Expression [
-        FuncDeclaration [
-            Leaf Lambda; 
-            Leaf (Identifier "x"); 
-            Leaf FuncDot; 
-            Expression [
-                Leaf (Literal "1")
-            ]
-        ]
-    ]
-
 [<Test>]
-let ``bottomUpParse - sample`` () = 
+let ``bottomUpParse - function declaration`` () = 
     let actual = bottomUpParse [
-                                Lambda;
-                                Identifier "x";
-                                FuncDot;
+                                Lambda
+                                FuncName "x"
+                                ArgName "ignoredArg"
+                                FuncDot
                                 Literal "always return this string"
                                ]
-    let expected = Some sampleTree
+    let expected = 
+        Expression [
+            FuncDeclaration [
+                Leaf Lambda
+                Leaf (FuncName "x")
+                Leaf (ArgName "ignoredArg")
+                Leaf FuncDot
+                Expression [
+                    Leaf (Literal "always return this string")
+                ]
+            ]
+        ]
+        |> Some
+
     Assert.AreEqual(expected, actual)
 
 [<Test>]
 let ``bottomUpParse - invalid input`` () = 
     let actual = bottomUpParse [
                                 Lambda
-                                Identifier "f"
-                                Identifier "illegalDuplicatedIdentifier"
-                                FuncDot
-                                Literal "1"
+                                Identifier "notExpectingAnIdHere"
                                ]
     Assert.AreEqual(None, actual)
 
@@ -76,6 +75,32 @@ let ``bottomUpParse - function invocation`` () =
                     Leaf (Literal "racecar")
                 ]
             ]
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - bracketed function invocation`` () =
+    (* Parsing:
+            <isPalindrome "racecar"> 
+    *)
+    let actual = 
+        bottomUpParse [
+            OpenAngleBracket
+            Identifier "isPalindrome"
+            Literal "racecar"
+            CloseAngleBracket
+        ]
+
+    let expected = 
+        Expression [
+            Leaf (OpenAngleBracket)
+            FuncInvocation [
+                Expression [Leaf (Identifier "isPalindrome")]
+                Expression [Leaf (Literal "racecar")]
+            ]
+            Leaf (CloseAngleBracket)
         ]
         |> Some
 

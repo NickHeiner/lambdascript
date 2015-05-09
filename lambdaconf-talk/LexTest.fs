@@ -77,3 +77,11 @@ let ``lex - Or`` () =
 [<Test>]
 let ``lex - RegexLiteral`` () =
     Assert.AreEqual([RegexLiteral ".*"], lex ["/.*/"])
+
+[<Test>]
+let ``lex - FuncName`` () =
+    Assert.AreEqual([FuncName "getFoo"], lex ["@getFoo"])
+
+[<Test>]
+let ``lex - ArgName`` () =
+    Assert.AreEqual([ArgName "notTheBees"], lex [":notTheBees"])

@@ -7,6 +7,11 @@ type LexSymbol =
     | Identifier of string 
     | FuncDot
     | Literal of string 
+    
+    (* TODO Determine if this hack is ok *)
+    | FuncName of string
+    | ArgName of string
+
     | OpenAngleBracket
     | CloseAngleBracket
     | OpenSquareBracket
@@ -33,6 +38,8 @@ let lex =
         | "is" -> Equality
         | "and" -> And
         | "or" -> Or
+        | FirstRegexGroup ":(.*)" str -> ArgName str
+        | FirstRegexGroup "@(.*)" str -> FuncName str
         | FirstRegexGroup "\"(.*)\"" str -> Literal str
         | FirstRegexGroup "/(.*)/" regexContents -> RegexLiteral regexContents
         | _ -> Identifier token
