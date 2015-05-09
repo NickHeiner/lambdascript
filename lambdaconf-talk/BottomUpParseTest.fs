@@ -23,7 +23,7 @@ let ``bottomUpParse - sample`` () =
                                 Lambda;
                                 Identifier "x";
                                 FuncDot;
-                                Literal "1"
+                                Literal "always return this string"
                                ]
     let expected = Some sampleTree
     Assert.AreEqual(expected, actual)
@@ -69,8 +69,12 @@ let ``bottomUpParse - function invocation`` () =
     let expected = 
         Expression [
             FuncInvocation [
-                Leaf (Identifier "isPalindrome")
-                Leaf (Literal "racecar")
+                Expression [
+                    Leaf (Identifier "isPalindrome")
+                ]
+                Expression [
+                    Leaf (Literal "racecar")
+                ]
             ]
         ]
         |> Some

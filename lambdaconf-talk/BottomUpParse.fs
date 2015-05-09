@@ -5,22 +5,12 @@ open Util
 open Grammar
 
 let getMatchingRule = function
-    | [Leaf (Literal lit)] -> 
-        Some (Expression [Leaf (Literal lit)])
-    | [Leaf Lambda; Leaf (Identifier id); Leaf FuncDot; Expression e] -> 
-        Some (FuncDeclaration [
-                Leaf Lambda
-                Leaf (Identifier id)
-                Leaf FuncDot
-                Expression e
-            ]
-       )
-    | [FuncDeclaration children] -> Some (Expression [FuncDeclaration children])
-    | [Leaf (Identifier id); Expression expr] -> 
-        Some (FuncInvocation [
-                Leaf (Identifier id)
-                Expression expr
-            ])
+    | [Leaf (Identifier ident)] as identifierLeaf -> Some (Expression identifierLeaf)
+    | [Leaf (Literal lit)] as literalLeaf -> Some (Expression literalLeaf)
+    | [FuncDeclaration children] as funcDecl -> Some (Expression funcDecl)
+    | [FuncInvocation children] as funcInvoke -> Some (Expression funcInvoke)
+    | [Leaf Lambda; Leaf (Identifier id); Leaf FuncDot; Expression e] as children -> Some (FuncDeclaration children)
+    | [Expression expr; Expression expr'] as expressions -> Some (FuncInvocation expressions)
     | _ -> None
 
 (* What is the right way to do this? And is it just a builtin? *)
@@ -38,10 +28,11 @@ let bottomUpParse lexSymbols =
             match getMatchingRule possibleHandle with
             (* If we found something *)
             (* We were searching backwards through the parse stack, so before we return it, we need to re-reverse it. *)
-            | Some parseTree -> Some (parseTree::restOfStack)
+            | Some parseTree -> 
+                log "reducing by putting this on the stack" parseTree
+                Some (parseTree::restOfStack)
             (* Nothing found *)
             | None -> 
-                log "no handle found" possibleHandle;
                 match restOfStack with
                 (* There are no handles on the parseStack right now *)
                 | [] -> None
@@ -73,7 +64,7 @@ let bottomUpParse lexSymbols =
         | None ->
             match shift parseStack input with
             (* If we have no more input, we can make a decision now as to whether or not our input is valid. *)
-            | None -> if acceptableEndState parseStack then Some (List.head parseStack) else None
+            | None -> if acceptableEndState parseStack then parseStack |> List.head |> Some else None
             (* If we do have more input, we will have to keep looking. *)
             | Some (nextParseStack, nextInput) -> parseStep nextParseStack nextInput
 
