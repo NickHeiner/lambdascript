@@ -141,3 +141,23 @@ let ``bottomUpParse - nested function invocation`` () =
         |> Some
 
     Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - boolean`` () =
+    let actual = 
+        bottomUpParse [
+            Literal "foo"
+            Equality
+            Literal "bar"
+        ]
+    let expected = 
+        Expression [
+            Boolean [
+                Expression [Leaf (Literal "foo")]
+                Leaf Equality
+                Expression [Leaf (Literal "bar")]
+            ]
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
