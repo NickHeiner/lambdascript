@@ -161,3 +161,39 @@ let ``bottomUpParse - boolean`` () =
         |> Some
 
     Assert.AreEqual(expected, actual)
+    
+[<Test>]
+let ``bottomUpParse - boolean OR`` () =
+    let actual = 
+        bottomUpParse [
+            Literal "foo"
+            Equality
+            Literal "bar"
+            Or
+            Identifier "x"
+            Equality
+            Identifier "y"
+        ]
+    let expected = 
+        Expression [
+            Boolean [
+                Expression [
+                    Boolean [
+                        Expression [Leaf (Literal "foo")]
+                        Leaf Equality
+                        Expression [Leaf (Literal "bar")]
+                    ]
+                ]
+                Leaf Or
+                Expression [
+                    Boolean [
+                        Expression [Leaf (Identifier "x")]
+                        Leaf Equality
+                        Expression [Leaf (Identifier "y")]
+                    ]
+                ]
+            ]
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
