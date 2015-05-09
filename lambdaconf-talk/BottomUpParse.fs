@@ -12,6 +12,7 @@ let getMatchingRule = function
     | [Leaf Lambda; Leaf (FuncName funcName); Leaf (ArgName arg); Leaf FuncDot; Expression e] as children -> 
         Some (FuncDeclaration children)
     | [Expression expr; Expression expr'] as expressions -> Some (FuncInvocation expressions)
+    | [Leaf OpenAngleBracket; Expression expr; Leaf CloseAngleBracket] as children -> Some (Expression children)
     | _ -> None
 
 (* What is the right way to do this? And is it just a builtin? *)
