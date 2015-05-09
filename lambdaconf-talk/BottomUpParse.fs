@@ -6,16 +6,21 @@ open Grammar
 
 let getMatchingRule = function
     | [Leaf (Literal lit)] -> 
-        Some (Expression [Leaf (Literal "1")])
+        Some (Expression [Leaf (Literal lit)])
     | [Leaf Lambda; Leaf (Identifier id); Leaf FuncDot; Expression e] -> 
         Some (FuncDeclaration [
-                Leaf Lambda; 
-                Leaf (Identifier id); 
-                Leaf FuncDot; 
+                Leaf Lambda
+                Leaf (Identifier id)
+                Leaf FuncDot
                 Expression e
             ]
        )
     | [FuncDeclaration children] -> Some (Expression [FuncDeclaration children])
+    | [Leaf (Identifier id); Expression expr] -> 
+        Some (FuncInvocation [
+                Leaf (Identifier id)
+                Expression expr
+            ])
     | _ -> None
 
 (* What is the right way to do this? And is it just a builtin? *)

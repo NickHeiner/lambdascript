@@ -7,8 +7,8 @@ open Lex
 Grammar: 
 	Expr -> FuncDecl | FuncInvocation | StringLookup | Boolean | < Expr > | identifier | literal
 	FuncDecl -> lambda identifier identifier funcDot Expr
-	FuncInvocation -> identifier Expr
-	StringLookup -> identifier [ regex ]
+	FuncInvocation -> Expr Expr
+	StringLookup -> Expr [ regex ]
 	Boolean -> Expr is Expr | Boolean or Boolean | Boolean and Boolean 
 
 *)

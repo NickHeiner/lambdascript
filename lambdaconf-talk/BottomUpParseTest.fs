@@ -40,7 +40,45 @@ let ``bottomUpParse - invalid input`` () =
     Assert.AreEqual(None, actual)
 
 [<Test>]
+let ``bottomUpParse - literal`` () =
+    (* Parsing:
+            "racecar"
+    *)
+    let actual = 
+        bottomUpParse [
+            Literal "racecar"
+        ]
+
+    let expected = 
+        Expression [Leaf (Literal "racecar")]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
 let ``bottomUpParse - function invocation`` () =
+    (* Parsing:
+            isPalindrome "racecar"
+    *)
+    let actual = 
+        bottomUpParse [
+            Identifier "isPalindrome"
+            Literal "racecar"
+        ]
+
+    let expected = 
+        Expression [
+            FuncInvocation [
+                Leaf (Identifier "isPalindrome")
+                Leaf (Literal "racecar")
+            ]
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - nested function invocation`` () =
     (* Parsing:
             print <isPalindrome "racecar"> 
     *)
