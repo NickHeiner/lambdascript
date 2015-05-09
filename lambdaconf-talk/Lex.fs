@@ -11,7 +11,7 @@ type LexSymbol =
     | CloseAngleBracket
     | OpenSquareBracket
     | CloseSquareBracket 
-    | Is
+    | Equality
     | And
     | Or
     | RegexLiteral of string
@@ -30,6 +30,9 @@ let lex (tokens : list<string>) =
         | ">" -> CloseAngleBracket
         | "[" -> OpenSquareBracket
         | "]" -> CloseSquareBracket
+        | "is" -> Equality
+        | "and" -> And
+        | "or" -> Or
         | FirstRegexGroup "\"(.*)\"" str -> Literal str
         | _ -> Identifier token
     ) tokens

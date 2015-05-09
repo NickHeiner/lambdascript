@@ -61,3 +61,15 @@ let ``lex - OpenSquareBracket`` () =
 [<Test>]
 let ``lex - CloseSquareBracket`` () =
     Assert.AreEqual([CloseSquareBracket], lex ["]"])
+
+[<Test>]
+let ``lex - Equality`` () =
+    Assert.AreEqual([Equality], lex ["is"])
+
+[<Test>]
+let ``lex - And`` () =
+    Assert.AreEqual([And], lex ["and"])
+
+[<Test>]
+let ``lex - Or`` () =
+    Assert.AreEqual([Or], lex ["or"])
