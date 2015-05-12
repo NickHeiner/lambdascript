@@ -50,6 +50,7 @@ let cstToAst (astOpt : ParseTree option) : Ast option =
     | Some ast -> 
         let rec cstToAstRec = function
             | Leaf (Literal value) -> Lit value
+            | Leaf (Identifier value) -> Ident value
             | Expression [Leaf OpenAngleBracket; Expression e as expr; Leaf CloseAngleBracket] -> cstToAstRec expr
             | Expression (hd::tl) when List.isEmpty tl -> cstToAstRec hd
             | _ -> Unknown

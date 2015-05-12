@@ -19,6 +19,19 @@ let ``cstToAst - literal`` () =
     Assert.AreEqual(expected, actual)
 
 [<Test>]
+let ``cstToAst - identifier`` () =
+    let expected = Ident "param" |> Some
+
+    let actual = 
+        Expression [
+            Leaf (Identifier "param")
+        ]
+        |> Some
+        |> cstToAst
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
 let ``cstToAst - string lookup`` () =
     let expected = 
         StringReLookup {
