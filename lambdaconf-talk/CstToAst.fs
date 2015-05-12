@@ -2,6 +2,7 @@
 
 open Grammar
 open Lex
+open Util
 
 type Argument = 
     | Lit of string
@@ -48,11 +49,22 @@ let cstToAst (astOpt : ParseTree option) : Ast option =
     match astOpt with
     | None -> None
     | Some ast -> 
-        let rec cstToAstRec = function
+        let rec cstToAstRec ast = 
+            log "cstToAstRec" ast
+            match ast with
             | Leaf (Literal value) -> Lit value
             | Leaf (Identifier value) -> Ident value
             | Expression [Leaf OpenAngleBracket; Expression e as expr; Leaf CloseAngleBracket] -> cstToAstRec expr
             | Expression (hd::tl) when List.isEmpty tl -> cstToAstRec hd
+            | StringLookup [
+                            Expression str as toLookup
+                            Leaf OpenSquareBracket 
+                            Leaf (RegexLiteral re)
+                            Leaf CloseSquareBracket
+                ] -> StringReLookup {
+                        lookupSource = cstToAstRec toLookup
+                        regex = re    
+                    }
             | _ -> Unknown
 
         cstToAstRec ast |> Some

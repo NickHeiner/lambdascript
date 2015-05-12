@@ -37,7 +37,8 @@ let ``cstToAst - string lookup`` () =
         StringReLookup {
             lookupSource = Lit "foo"
             regex = "^(f)?"
-        }
+        } 
+        |> Some
 
     let actual = 
         Expression [
