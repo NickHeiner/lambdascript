@@ -259,3 +259,27 @@ let ``bottomUpParse - boolean AND`` () =
         |> Some
 
     Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - string lookup`` () =
+    let expected = 
+        Expression [
+            StringLookup [
+                Expression [
+                    Leaf (Identifier "str")
+                ]
+                Leaf OpenSquareBracket
+                Leaf (RegexLiteral "^a")
+                Leaf CloseSquareBracket
+            ]
+        ] |> Some
+
+    let actual = 
+        bottomUpParse [
+            Identifier "str"
+            OpenSquareBracket
+            RegexLiteral "^a"
+            CloseSquareBracket
+        ]
+
+    Assert.AreEqual(expected, actual)

@@ -5,18 +5,30 @@ open Util
 open Grammar
 
 let getMatchingRule = function
+    (* Expressions *)
     | [Leaf (Identifier ident)] as identifierLeaf -> Some (Expression identifierLeaf)
     | [Leaf (Literal lit)] as literalLeaf -> Some (Expression literalLeaf)
     | [FuncDeclaration children] as funcDecl -> Some (Expression funcDecl)
     | [FuncInvocation children] as funcInvoke -> Some (Expression funcInvoke)
+    | [StringLookup children] as stringLookup -> Some (Expression stringLookup)
     | [Boolean children] as boolean -> Some (Expression boolean)
+    | [Leaf OpenAngleBracket; Expression expr; Leaf CloseAngleBracket] as children -> Some (Expression children)
+
+    (* Functions *)
     | [Leaf Lambda; Leaf (FuncName funcName); Leaf (ArgName arg); Leaf FuncDot; Expression e] as children -> 
         Some (FuncDeclaration children)
     | [Expression expr; Expression expr'] as expressions -> Some (FuncInvocation expressions)
-    | [Leaf OpenAngleBracket; Expression expr; Leaf CloseAngleBracket] as children -> Some (Expression children)
+    
+    (* Booleans *)
     | [Expression leftHandSide; Leaf Equality; Expression rightHandSide] as children -> Some (Boolean children)
     | [Expression leftHandSide; Leaf Or; Expression rightHandSide] as children -> Some (Boolean children)
     | [Expression leftHandSide; Leaf And; Expression rightHandSide] as children -> Some (Boolean children)
+    
+    (* StringLookup *)
+    | [Expression str; Leaf OpenSquareBracket; Leaf (RegexLiteral re); Leaf CloseSquareBracket] as children -> 
+        Some (StringLookup children)
+    
+    (* We have no match *)
     | _ -> None
 
 (* What is the right way to do this? And is it just a builtin? *)
