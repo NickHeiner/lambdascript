@@ -15,6 +15,8 @@ let getMatchingRule = function
     | [Expression expr; Expression expr'] as expressions -> Some (FuncInvocation expressions)
     | [Leaf OpenAngleBracket; Expression expr; Leaf CloseAngleBracket] as children -> Some (Expression children)
     | [Expression leftHandSide; Leaf Equality; Expression rightHandSide] as children -> Some (Boolean children)
+    | [Expression leftHandSide; Leaf Or; Expression rightHandSide] as children -> Some (Boolean children)
+    | [Expression leftHandSide; Leaf And; Expression rightHandSide] as children -> Some (Boolean children)
     | _ -> None
 
 (* What is the right way to do this? And is it just a builtin? *)

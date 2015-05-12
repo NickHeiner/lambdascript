@@ -164,33 +164,95 @@ let ``bottomUpParse - boolean`` () =
     
 [<Test>]
 let ``bottomUpParse - boolean OR`` () =
+    (* I wish I didn't need all these brackets. *)
     let actual = 
         bottomUpParse [
+            OpenAngleBracket
             Literal "foo"
             Equality
             Literal "bar"
+            CloseAngleBracket
             Or
+            OpenAngleBracket
             Identifier "x"
             Equality
             Identifier "y"
+            CloseAngleBracket
         ]
     let expected = 
         Expression [
             Boolean [
                 Expression [
-                    Boolean [
-                        Expression [Leaf (Literal "foo")]
-                        Leaf Equality
-                        Expression [Leaf (Literal "bar")]
+                    Leaf OpenAngleBracket
+                    Expression [
+                        Boolean [
+                            Expression [Leaf (Literal "foo")]
+                            Leaf Equality
+                            Expression [Leaf (Literal "bar")]
+                        ]
                     ]
+                    Leaf CloseAngleBracket
                 ]
                 Leaf Or
                 Expression [
-                    Boolean [
-                        Expression [Leaf (Identifier "x")]
-                        Leaf Equality
-                        Expression [Leaf (Identifier "y")]
+                    Leaf OpenAngleBracket
+                    Expression [
+                        Boolean [
+                            Expression [Leaf (Identifier "x")]
+                            Leaf Equality
+                            Expression [Leaf (Identifier "y")]
+                        ]
                     ]
+                    Leaf CloseAngleBracket
+                ]
+            ]
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+    
+[<Test>]
+let ``bottomUpParse - boolean AND`` () =
+    (* I wish I didn't need all these brackets. *)
+    let actual = 
+        bottomUpParse [
+            OpenAngleBracket
+            Literal "foo"
+            Equality
+            Literal "bar"
+            CloseAngleBracket
+            And
+            OpenAngleBracket
+            Identifier "x"
+            Equality
+            Identifier "y"
+            CloseAngleBracket
+        ]
+    let expected = 
+        Expression [
+            Boolean [
+                Expression [
+                    Leaf OpenAngleBracket
+                    Expression [
+                        Boolean [
+                            Expression [Leaf (Literal "foo")]
+                            Leaf Equality
+                            Expression [Leaf (Literal "bar")]
+                        ]
+                    ]
+                    Leaf CloseAngleBracket
+                ]
+                Leaf And
+                Expression [
+                    Leaf OpenAngleBracket
+                    Expression [
+                        Boolean [
+                            Expression [Leaf (Identifier "x")]
+                            Leaf Equality
+                            Expression [Leaf (Identifier "y")]
+                        ]
+                    ]
+                    Leaf CloseAngleBracket
                 ]
             ]
         ]
