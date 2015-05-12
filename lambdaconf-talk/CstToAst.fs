@@ -42,8 +42,16 @@ and Ast =
     | StringReLookup of StringLookupInfo
     | Lit of string
     | Ident of string
+    | Unknown
 
 let cstToAst (astOpt : ParseTree option) : Ast option = 
     match astOpt with
     | None -> None
-    | Some ast -> None 
+    | Some ast -> 
+        let rec cstToAstRec = function
+            | Leaf (Literal value) -> Lit value
+            | Expression [Leaf OpenAngleBracket; Expression e as expr; Leaf CloseAngleBracket] -> cstToAstRec expr
+            | Expression (hd::tl) when List.isEmpty tl -> cstToAstRec hd
+            | _ -> Unknown
+
+        cstToAstRec ast |> Some

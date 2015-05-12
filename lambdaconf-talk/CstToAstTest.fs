@@ -7,7 +7,7 @@ open CstToAst
 
 [<Test>]
 let ``cstToAst - literal`` () =
-    let expected = Lit "foo"
+    let expected = Lit "foo" |> Some
 
     let actual = 
         Expression [
