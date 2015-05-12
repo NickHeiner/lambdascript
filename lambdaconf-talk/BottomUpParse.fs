@@ -5,17 +5,30 @@ open Util
 open Grammar
 
 let getMatchingRule = function
-    | [Leaf (Literal lit)] -> 
-        Some (Expression [Leaf (Literal "1")])
-    | [Leaf Lambda; Leaf (Identifier id); Leaf FuncArrow; Expression e] -> 
-        Some (FuncDeclaration [
-                Leaf Lambda; 
-                Leaf (Identifier id); 
-                Leaf FuncArrow; 
-                Expression e
-            ]
-       )
-    | [FuncDeclaration children] -> Some (Expression [FuncDeclaration children])
+    (* Expressions *)
+    | [Leaf (Identifier ident)] as identifierLeaf -> Some (Expression identifierLeaf)
+    | [Leaf (Literal lit)] as literalLeaf -> Some (Expression literalLeaf)
+    | [FuncDeclaration children] as funcDecl -> Some (Expression funcDecl)
+    | [FuncInvocation children] as funcInvoke -> Some (Expression funcInvoke)
+    | [StringLookup children] as stringLookup -> Some (Expression stringLookup)
+    | [Boolean children] as boolean -> Some (Expression boolean)
+    | [Leaf OpenAngleBracket; Expression expr; Leaf CloseAngleBracket] as children -> Some (Expression children)
+
+    (* Functions *)
+    | [Leaf Lambda; Leaf (FuncName funcName); Leaf (ArgName arg); Leaf FuncDot; Expression e] as children -> 
+        Some (FuncDeclaration children)
+    | [Expression expr; Expression expr'] as expressions -> Some (FuncInvocation expressions)
+    
+    (* Booleans *)
+    | [Expression leftHandSide; Leaf Equality; Expression rightHandSide] as children -> Some (Boolean children)
+    | [Expression leftHandSide; Leaf Or; Expression rightHandSide] as children -> Some (Boolean children)
+    | [Expression leftHandSide; Leaf And; Expression rightHandSide] as children -> Some (Boolean children)
+    
+    (* StringLookup *)
+    | [Expression str; Leaf OpenSquareBracket; Leaf (RegexLiteral re); Leaf CloseSquareBracket] as children -> 
+        Some (StringLookup children)
+    
+    (* We have no match *)
     | _ -> None
 
 (* What is the right way to do this? And is it just a builtin? *)
@@ -24,28 +37,27 @@ let stackPush list elem = elem::list
 let stackPop list = List.head list, List.tail list
 
 let bottomUpParse lexSymbols = 
-    let input = List.map Leaf lexSymbols
-    log "parsing" input
+    let inputStack = lexSymbols |> List.map Leaf |> List.rev
+    log "parsing" inputStack
     (* Keep popping from the stack until we find a handle. *)
     let tryFindHandle parseStack =
         let rec tryFindHandleRec (possibleHandle : ParseTree list) (restOfStack : ParseTree list) : ParseTree list option =
             log "checking to see if this is a handle" possibleHandle;
-            match getMatchingRule possibleHandle with
+            match possibleHandle |> List.rev |> getMatchingRule with
             (* If we found something *)
-            (* We were searching backwards through the parse stack, so before we return it, we need to re-reverse it. *)
-            | Some parseTree -> Some (parseTree::restOfStack)
+            | Some parseTree -> 
+                log "reducing by putting this on the stack" parseTree
+                Some (parseTree::restOfStack)
             (* Nothing found *)
             | None -> 
-                log "no handle found" possibleHandle;
                 match restOfStack with
                 (* There are no handles on the parseStack right now *)
                 | [] -> None
                 (* We can keep going *)
-                | _::_ -> 
-                    let nextHandlePartToTry, remainingStack = stackPop restOfStack
-                    tryFindHandleRec (List.append possibleHandle [nextHandlePartToTry]) remainingStack
+                | nextHandlePartToTry::remainingStack -> 
+                    tryFindHandleRec (nextHandlePartToTry::possibleHandle) remainingStack
 
-        tryFindHandleRec [] (List.rev parseStack)
+        tryFindHandleRec [] parseStack
     
     let shift (parseStack : 'a list) (input : 'a list) : ('a list * 'a list) option =
         match input with
@@ -53,7 +65,7 @@ let bottomUpParse lexSymbols =
         | [] -> None
         | head::tail -> 
             log "shifting on to parse stack" head;
-            Some ((List.append parseStack [head]), tail)
+            Some (stackPush parseStack head, tail)
 
     (* When we think we may be done, we need to know if the state we wound up in is valid. *)
     let acceptableEndState = function
@@ -68,8 +80,8 @@ let bottomUpParse lexSymbols =
         | None ->
             match shift parseStack input with
             (* If we have no more input, we can make a decision now as to whether or not our input is valid. *)
-            | None -> if acceptableEndState parseStack then Some (List.head parseStack) else None
+            | None -> if acceptableEndState parseStack then parseStack |> List.head |> Some else None
             (* If we do have more input, we will have to keep looking. *)
             | Some (nextParseStack, nextInput) -> parseStep nextParseStack nextInput
 
-    parseStep [] input
+    parseStep [] inputStack

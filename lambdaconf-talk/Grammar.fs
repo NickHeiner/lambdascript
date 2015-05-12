@@ -2,13 +2,23 @@
 
 open Lex
 
-(*
-    Our grammar is:
+(* 
 
-    Expression -> FuncDeclaration | Literal
-    FuncDeclaration -> Lambda Identifier FuncArrow Expression
+Grammar: 
+	Expr -> FuncDecl | FuncInvocation | StringLookup | Boolean | < Expr > | identifier | literal
+	FuncDecl -> lambda funcName argName funcDot Expr
+	FuncInvocation -> Expr Expr
+	StringLookup -> Expr [ regex ]
+	Boolean -> Expr equality Expr | Boolean or Boolean | Boolean and Boolean 
+
 *)
+
 type ParseTree = 
-    | Leaf of LexSymbol 
-    | Expression of List<ParseTree>
-    | FuncDeclaration of List<ParseTree>
+    | Expression of SententialForms
+    | FuncDeclaration of SententialForms
+    | FuncInvocation of SententialForms
+    | StringLookup of SententialForms
+    | Boolean of SententialForms
+    | Leaf of LexSymbol
+
+and SententialForms = ParseTree list

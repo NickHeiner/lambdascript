@@ -5,36 +5,281 @@ open Grammar
 open BottomUpParse
 open NUnit.Framework
 
-let sampleTree = 
-    Expression [
-        FuncDeclaration [
-            Leaf Lambda; 
-            Leaf (Identifier "x"); 
-            Leaf FuncArrow; 
-            Expression [
-                Leaf (Literal "1")
+[<Test>]
+let ``bottomUpParse - function declaration`` () = 
+    let actual = bottomUpParse [
+                                Lambda
+                                FuncName "x"
+                                ArgName "ignoredArg"
+                                FuncDot
+                                Literal "always return this string"
+                               ]
+    let expected = 
+        Expression [
+            FuncDeclaration [
+                Leaf Lambda
+                Leaf (FuncName "x")
+                Leaf (ArgName "ignoredArg")
+                Leaf FuncDot
+                Expression [
+                    Leaf (Literal "always return this string")
+                ]
             ]
         ]
-    ]
+        |> Some
 
-[<Test>]
-let ``bottomUpParse - sample``() = 
-    let actual = bottomUpParse [
-                                Lambda;
-                                Identifier "x";
-                                FuncArrow;
-                                Literal "1"
-                               ]
-    let expected = Some sampleTree
     Assert.AreEqual(expected, actual)
 
 [<Test>]
-let ``bottomUpParse - invalid input``() = 
+let ``bottomUpParse - invalid input`` () = 
     let actual = bottomUpParse [
-                                Lambda;
-                                Identifier "f";
-                                Identifier "illegalDuplicatedIdentifier";
-                                FuncArrow;
-                                Literal "1"
+                                Lambda
+                                Identifier "notExpectingAnIdHere"
                                ]
     Assert.AreEqual(None, actual)
+
+[<Test>]
+let ``bottomUpParse - literal`` () =
+    (* Parsing:
+            "racecar"
+    *)
+    let actual = 
+        bottomUpParse [
+            Literal "racecar"
+        ]
+
+    let expected = 
+        Expression [Leaf (Literal "racecar")]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - function invocation`` () =
+    (* Parsing:
+            isPalindrome "racecar"
+    *)
+    let actual = 
+        bottomUpParse [
+            Identifier "isPalindrome"
+            Literal "racecar"
+        ]
+
+    let expected = 
+        Expression [
+            FuncInvocation [
+                Expression [
+                    Leaf (Identifier "isPalindrome")
+                ]
+                Expression [
+                    Leaf (Literal "racecar")
+                ]
+            ]
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - bracketed function invocation`` () =
+    (* Parsing:
+            <isPalindrome "racecar"> 
+    *)
+    let actual = 
+        bottomUpParse [
+            OpenAngleBracket
+            Identifier "isPalindrome"
+            Literal "racecar"
+            CloseAngleBracket
+        ]
+
+    let expected = 
+        Expression [
+            Leaf (OpenAngleBracket)
+            Expression [
+                FuncInvocation [
+                    Expression [Leaf (Identifier "isPalindrome")]
+                    Expression [Leaf (Literal "racecar")]
+                ]
+            ]
+            Leaf (CloseAngleBracket)
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - nested function invocation`` () =
+    (* Parsing:
+            print <isPalindrome "racecar"> 
+    *)
+    let actual = 
+        bottomUpParse [
+            Identifier "print"
+            OpenAngleBracket
+            Identifier "isPalindrome"
+            Literal "racecar"
+            CloseAngleBracket
+        ]
+
+    let expected = 
+        Expression [
+            FuncInvocation [
+                Expression [Leaf (Identifier "print")]
+                Expression [
+                    Leaf OpenAngleBracket
+                    Expression [
+                        FuncInvocation [
+                            Expression [Leaf (Identifier "isPalindrome")]
+                            Expression [Leaf (Literal "racecar")]
+                        ]
+                    ]
+                    Leaf CloseAngleBracket
+                ]
+            ]
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - boolean`` () =
+    let actual = 
+        bottomUpParse [
+            Literal "foo"
+            Equality
+            Literal "bar"
+        ]
+    let expected = 
+        Expression [
+            Boolean [
+                Expression [Leaf (Literal "foo")]
+                Leaf Equality
+                Expression [Leaf (Literal "bar")]
+            ]
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+    
+[<Test>]
+let ``bottomUpParse - boolean OR`` () =
+    (* I wish I didn't need all these brackets. *)
+    let actual = 
+        bottomUpParse [
+            OpenAngleBracket
+            Literal "foo"
+            Equality
+            Literal "bar"
+            CloseAngleBracket
+            Or
+            OpenAngleBracket
+            Identifier "x"
+            Equality
+            Identifier "y"
+            CloseAngleBracket
+        ]
+    let expected = 
+        Expression [
+            Boolean [
+                Expression [
+                    Leaf OpenAngleBracket
+                    Expression [
+                        Boolean [
+                            Expression [Leaf (Literal "foo")]
+                            Leaf Equality
+                            Expression [Leaf (Literal "bar")]
+                        ]
+                    ]
+                    Leaf CloseAngleBracket
+                ]
+                Leaf Or
+                Expression [
+                    Leaf OpenAngleBracket
+                    Expression [
+                        Boolean [
+                            Expression [Leaf (Identifier "x")]
+                            Leaf Equality
+                            Expression [Leaf (Identifier "y")]
+                        ]
+                    ]
+                    Leaf CloseAngleBracket
+                ]
+            ]
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+    
+[<Test>]
+let ``bottomUpParse - boolean AND`` () =
+    (* I wish I didn't need all these brackets. *)
+    let actual = 
+        bottomUpParse [
+            OpenAngleBracket
+            Literal "foo"
+            Equality
+            Literal "bar"
+            CloseAngleBracket
+            And
+            OpenAngleBracket
+            Identifier "x"
+            Equality
+            Identifier "y"
+            CloseAngleBracket
+        ]
+    let expected = 
+        Expression [
+            Boolean [
+                Expression [
+                    Leaf OpenAngleBracket
+                    Expression [
+                        Boolean [
+                            Expression [Leaf (Literal "foo")]
+                            Leaf Equality
+                            Expression [Leaf (Literal "bar")]
+                        ]
+                    ]
+                    Leaf CloseAngleBracket
+                ]
+                Leaf And
+                Expression [
+                    Leaf OpenAngleBracket
+                    Expression [
+                        Boolean [
+                            Expression [Leaf (Identifier "x")]
+                            Leaf Equality
+                            Expression [Leaf (Identifier "y")]
+                        ]
+                    ]
+                    Leaf CloseAngleBracket
+                ]
+            ]
+        ]
+        |> Some
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - string lookup`` () =
+    let expected = 
+        Expression [
+            StringLookup [
+                Expression [
+                    Leaf (Identifier "str")
+                ]
+                Leaf OpenSquareBracket
+                Leaf (RegexLiteral "^a")
+                Leaf CloseSquareBracket
+            ]
+        ] |> Some
+
+    let actual = 
+        bottomUpParse [
+            Identifier "str"
+            OpenSquareBracket
+            RegexLiteral "^a"
+            CloseSquareBracket
+        ]
+
+    Assert.AreEqual(expected, actual)
