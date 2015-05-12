@@ -6,10 +6,23 @@ open Grammar
 open CstToAst
 
 [<Test>]
+let ``cstToAst - literal`` () =
+    let expected = Lit "foo"
+
+    let actual = 
+        Expression [
+            Leaf (Literal "foo")
+        ]
+        |> Some
+        |> cstToAst
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
 let ``cstToAst - string lookup`` () =
     let expected = 
         StringReLookup {
-            string = Leaf (Literal "foo")
+            lookupSource = Lit "foo"
             regex = "^(f)?"
         }
 

@@ -7,40 +7,43 @@ type Argument =
     | Lit of string
     | Ident of string
 
-type FunctionDeclaration = {
-    functionName: string
-    argName: string
-    body: ParseTree
-    }
-
-type FunctionInvocation = {
-    func: ParseTree
-    arg: Argument
-    }
-
 type BooleanOperator = 
     | Intersection
     | Union
     | Equal
 
 type BooleanExpression = {
-    leftHandSide: ParseTree
+    leftHandSide: Ast
     operator: BooleanOperator
-    rightHandSide: ParseTree
+    rightHandSide: Ast
     }
 
-type StringLookupInfo = {
-    string: ParseTree
+and FunctionDeclaration = {
+    functionName: string
+    argName: string
+    body: Ast
+    }
+    
+and FunctionInvocation = {
+    func: ParseTree
+    arg: Argument
+    }
+
+
+and StringLookupInfo = {
+    lookupSource: Ast
     regex: string
     }
 
-type Ast =
+and Ast =
     | FunctionDecl of FunctionDeclaration
     | FunctionInvoke of FunctionInvocation
     | Boolean of BooleanExpression
     | StringReLookup of StringLookupInfo
+    | Lit of string
+    | Ident of string
 
-let cstToAst (ast : ParseTree option) : Ast option = 
-    match ast with
+let cstToAst (astOpt : ParseTree option) : Ast option = 
+    match astOpt with
     | None -> None
-    | Some _ -> Some (FunctionInvoke { func = Leaf (Identifier "f"); arg = Ident "x"})
+    | Some ast -> None 
