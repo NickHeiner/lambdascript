@@ -200,3 +200,40 @@ let ``astToJsAst - string lookup`` () =
         |> Option.get
 
     areJsonEquivalent expected actual
+
+[<Test>]
+let ``astToJsAst - boolean or`` () =
+    let expected = """
+        {
+            "type": "Program",
+            "body": [
+                {
+                    "type": "ExpressionStatement",
+                    "expression": {
+                        "type": "LogicalExpression",
+                        "operator": "||",
+                        "left": {
+                            "type": "Identifier",
+                            "name": "foo"
+                        },
+                        "right": {
+                            "type": "Identifier",
+                            "name": "bar"
+                        }
+                    }
+                }
+            ]
+        }
+    """
+    
+    let actual = 
+        Bool {
+            leftHandSide = Ident "foo"
+            operator = Union
+            rightHandSide = Ident "bar"
+        }
+        |> Some
+        |> astToJsAst
+        |> Option.get
+
+    areJsonEquivalent expected actual

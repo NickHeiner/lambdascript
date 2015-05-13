@@ -65,6 +65,19 @@ let (astToJsAst : Ast option -> string option) = function
                 let propertyObj = new JObject([typeProp "Literal"; new JProperty("value", 1)])
                 memberExpression regexMatch propertyObj true
 
+            | Bool boolExpr -> 
+                let jsOperator = match boolExpr.operator with
+                                 | Union -> "||"
+                                 | Intersection -> "&&"
+                                 | Equal -> "==="
+
+                new JObject([
+                                typeProp "LogicalExpression"
+                                new JProperty("operator", jsOperator)
+                                new JProperty("left", astToJsAstRec boolExpr.leftHandSide)
+                                new JProperty("right", astToJsAstRec boolExpr.rightHandSide)
+                            ])
+
             | _ -> JsAstGenerationError "not yet implemented" |> raise
 
         let body = new JArray([astToJsAstRec ast |> inExpressionStatement])
