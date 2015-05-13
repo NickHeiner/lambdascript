@@ -133,3 +133,23 @@ let ``cstToAst - boolean or`` () =
         |> cstToAst
 
     Assert.AreEqual(expected, actual)
+   
+[<Test>]
+let ``cstToAst - function invocation`` () =
+    let expected = 
+        FunctionInvoke {
+            func = Ident "f"
+            arg = Ident "x"
+        } |> Some
+
+    let actual =
+        Expression [
+            FuncInvocation [
+                Expression [Leaf (Identifier "f")]
+                Expression [Leaf (Identifier "x")]
+            ]
+        ]
+        |> Some
+        |> cstToAst
+
+    Assert.AreEqual(expected, actual)
