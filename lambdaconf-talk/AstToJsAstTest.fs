@@ -274,3 +274,53 @@ let ``astToJsAst - boolean and`` () =
         |> Option.get
 
     areJsonEquivalent expected actual
+
+[<Test>]
+let ``astToJsAst - function declaration`` () =
+    let expected = """
+        {
+            "type": "Program",
+            "body": [
+                {
+                    "type": "FunctionDeclaration",
+                    "id": {
+                        "type": "Identifier",
+                        "name": "f"
+                    },
+                    "params": [
+                        {
+                            "type": "Identifier",
+                            "name": "x"
+                        }
+                    ],
+                    "defaults": [],
+                    "body": {
+                        "type": "BlockStatement",
+                        "body": [
+                            {
+                                "type": "ReturnStatement",
+                                "argument": {
+                                    "type": "Literal",
+                                    "value": "constant value"
+                                }
+                            }
+                        ]
+                    },
+                    "generator": false,
+                    "expression": false
+                }
+            ]
+        }
+    """
+    
+    let actual = 
+        FunctionDecl {
+            funcName = "f"
+            argName = "x"
+            body = Lit "constant value"
+        }
+        |> Some
+        |> astToJsAst
+        |> Option.get
+
+    areJsonEquivalent expected actual

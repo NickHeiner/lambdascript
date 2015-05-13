@@ -11,7 +11,7 @@ let (astToJsAst : Ast option -> string option) = function
     | None -> None
     | Some ast -> 
         let typeProp (value : string) = new JProperty("type", value)
-
+        
         let inExpressionStatement (expr : JObject) =
             new JObject([typeProp "ExpressionStatement"; new JProperty("expression", expr)])
 
@@ -36,10 +36,10 @@ let (astToJsAst : Ast option -> string option) = function
                 callExpr callee arguments
 
             | StringReLookup strLookup -> 
-                let memberExpression (obj : JObject) (property : JObject) computed =
+                let memberExpression (obj : JObject) (property : JObject) (computed : bool) =
                     new JObject([
                                     typeProp "MemberExpression"
-                                    new JProperty("computed", sprintf "%b" computed)
+                                    new JProperty("computed", computed)
                                     new JProperty("object", obj)
                                     new JProperty("property", property)
                                 ])
@@ -78,9 +78,42 @@ let (astToJsAst : Ast option -> string option) = function
                                 new JProperty("right", astToJsAstRec boolExpr.rightHandSide)
                             ])
 
-            | _ -> JsAstGenerationError "not yet implemented" |> raise
+            | FunctionDecl funcDecl -> 
+                let idObj = identObj funcDecl.funcName
+                let paramsObj = new JArray([identObj funcDecl.argName])
+                let innerBody = astToJsAstRec funcDecl.body
 
-        let body = new JArray([astToJsAstRec ast |> inExpressionStatement])
+                let blockStatement = 
+                    new JObject([
+                                typeProp "BlockStatement"
+                                new JProperty("body", 
+                                    new JArray([
+                                               new JObject([typeProp "ReturnStatement"; new JProperty("argument", innerBody)])
+                                              ])
+                                    )
+                                ])
+
+                new JObject([
+                            typeProp "FunctionDeclaration"
+                            new JProperty("id", idObj)
+                            new JProperty("params", paramsObj)
+                            new JProperty("defaults", new JArray([]))
+                            new JProperty("body", blockStatement)
+                            new JProperty("generator", false)
+                            new JProperty("expression", false)
+                            ])
+
+            (* TODO: This is a failure to use the type system properly. *)
+            | Unknown -> JsAstGenerationError "An AST should not be of type Unknown" |> raise
+
+        let body = 
+            let innerJsAstWrapped = 
+                let innerJsAst = astToJsAstRec ast
+                if (innerJsAst.GetValue "type").ToString() = "FunctionDeclaration" 
+                then innerJsAst 
+                else inExpressionStatement innerJsAst
+
+            new JArray([innerJsAstWrapped])
 
         new JObject([new JProperty("type", "Program"); new JProperty("body", body)])
         |> JsonConvert.SerializeObject
