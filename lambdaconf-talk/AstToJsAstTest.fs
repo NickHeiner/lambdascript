@@ -9,7 +9,32 @@ let areJsonEquivalent expected actual =
     Assert.AreEqual(JsonConvert.DeserializeObject expected, JsonConvert.DeserializeObject actual)
 
 [<Test>]
-let ``astToJsAst -- function invocation`` () =
+let ``astToJsAst - literal`` () =
+    let expected = """
+        {
+            "type": "Program",
+            "body": [
+                {
+                    "type": "ExpressionStatement",
+                    "expression": {
+                        "type": "Literal",
+                        "value": "hi"
+                    }
+                }
+            ]
+        }
+    """
+    
+    let actual = 
+        Lit "hi"
+        |> Some
+        |> astToJsAst
+        |> Option.get
+
+    areJsonEquivalent expected actual
+
+[<Test>]
+let ``astToJsAst - function invocation`` () =
     let expected = """
         {
         "type": "Program",
