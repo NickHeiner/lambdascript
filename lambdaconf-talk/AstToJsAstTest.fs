@@ -58,7 +58,8 @@ let ``astToJsAst - identifier`` () =
 
     areJsonEquivalent expected actual
 
-let ``astToJsAst - function invocation`` () =
+[<Test>]
+let ``astToJsAst - function invocation with identifier`` () =
     let expected = """
         {
         "type": "Program",
