@@ -39,7 +39,7 @@ and StringLookupInfo = {
 and Ast =
     | FunctionDecl of FunctionDeclaration
     | FunctionInvoke of FunctionInvocation
-    | Boolean of BooleanExpression
+    | Bool of BooleanExpression
     | StringReLookup of StringLookupInfo
     | Lit of string
     | Ident of string
@@ -54,8 +54,10 @@ let cstToAst (astOpt : ParseTree option) : Ast option =
             match ast with
             | Leaf (Literal value) -> Lit value
             | Leaf (Identifier value) -> Ident value
-            | Expression [Leaf OpenAngleBracket; Expression e as expr; Leaf CloseAngleBracket] -> cstToAstRec expr
+            | Expression [Leaf OpenAngleBracket; Expression _ as expr; Leaf CloseAngleBracket] -> cstToAstRec expr
             | Expression (hd::tl) when List.isEmpty tl -> cstToAstRec hd
+            | Boolean [Expression _ as lhs; Leaf Equality; Expression _ as rhs] -> 
+                Bool { leftHandSide = cstToAstRec lhs; operator = Equal; rightHandSide = cstToAstRec rhs }
             | StringLookup [
                             Expression str as toLookup
                             Leaf OpenSquareBracket 

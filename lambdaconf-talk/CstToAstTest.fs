@@ -56,3 +56,28 @@ let ``cstToAst - string lookup`` () =
 
     Assert.AreEqual(expected, actual)
    
+[<Test>]
+let ``cstToAst - boolean equals`` () =
+    let expected = 
+        Bool {
+            leftHandSide = Lit ""
+            operator = Equal
+            rightHandSide = Ident "str"
+        } |> Some
+
+    let actual =
+        Expression [
+            Boolean [
+                Expression [
+                    Leaf (Literal "")
+                ]
+                Leaf Equality
+                Expression [
+                    Leaf (Identifier "str")
+                ]
+            ]
+        ]
+        |> Some
+        |> cstToAst
+
+    Assert.AreEqual(expected, actual)
