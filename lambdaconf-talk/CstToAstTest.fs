@@ -81,3 +81,55 @@ let ``cstToAst - boolean equals`` () =
         |> cstToAst
 
     Assert.AreEqual(expected, actual)
+   
+[<Test>]
+let ``cstToAst - boolean and`` () =
+    let expected = 
+        Bool {
+            leftHandSide = Lit ""
+            operator = Intersection
+            rightHandSide = Ident "str"
+        } |> Some
+
+    let actual =
+        Expression [
+            Boolean [
+                Expression [
+                    Leaf (Literal "")
+                ]
+                Leaf And
+                Expression [
+                    Leaf (Identifier "str")
+                ]
+            ]
+        ]
+        |> Some
+        |> cstToAst
+
+    Assert.AreEqual(expected, actual)
+   
+[<Test>]
+let ``cstToAst - boolean or`` () =
+    let expected = 
+        Bool {
+            leftHandSide = Lit ""
+            operator = Union
+            rightHandSide = Ident "str"
+        } |> Some
+
+    let actual =
+        Expression [
+            Boolean [
+                Expression [
+                    Leaf (Literal "")
+                ]
+                Leaf Or
+                Expression [
+                    Leaf (Identifier "str")
+                ]
+            ]
+        ]
+        |> Some
+        |> cstToAst
+
+    Assert.AreEqual(expected, actual)

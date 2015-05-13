@@ -54,10 +54,18 @@ let cstToAst (astOpt : ParseTree option) : Ast option =
             match ast with
             | Leaf (Literal value) -> Lit value
             | Leaf (Identifier value) -> Ident value
+            
             | Expression [Leaf OpenAngleBracket; Expression _ as expr; Leaf CloseAngleBracket] -> cstToAstRec expr
             | Expression (hd::tl) when List.isEmpty tl -> cstToAstRec hd
+
+            (* I bet I could DRY this out *)
             | Boolean [Expression _ as lhs; Leaf Equality; Expression _ as rhs] -> 
                 Bool { leftHandSide = cstToAstRec lhs; operator = Equal; rightHandSide = cstToAstRec rhs }
+            | Boolean [Expression _ as lhs; Leaf And; Expression _ as rhs] -> 
+                Bool { leftHandSide = cstToAstRec lhs; operator = Intersection; rightHandSide = cstToAstRec rhs }
+            | Boolean [Expression _ as lhs; Leaf Or; Expression _ as rhs] -> 
+                Bool { leftHandSide = cstToAstRec lhs; operator = Union; rightHandSide = cstToAstRec rhs }
+
             | StringLookup [
                             Expression str as toLookup
                             Leaf OpenSquareBracket 
