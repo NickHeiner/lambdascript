@@ -68,12 +68,18 @@
     <Compile Include="BottomUpParseTest.fs" />
     <Compile Include="CstToAst.fs" />
     <Compile Include="CstToAstTest.fs" />
+    <Compile Include="AstToJsAst.fs" />
+    <Compile Include="AstToJsAstTest.fs" />
     <Compile Include="Program.fs" />
     <None Include="sample.lambda" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.core">
