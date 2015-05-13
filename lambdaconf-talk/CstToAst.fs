@@ -16,7 +16,7 @@ type BooleanExpression = {
     }
 
 and FunctionDeclaration = {
-    functionName: string
+    funcName: string
     argName: string
     body: Ast
     }
@@ -57,6 +57,15 @@ let cstToAst (astOpt : ParseTree option) : Ast option =
             | Expression [Leaf OpenAngleBracket; Expression _ as expr; Leaf CloseAngleBracket] -> cstToAstRec expr
             | Expression (hd::tl) when List.isEmpty tl -> cstToAstRec hd
 
+            | FuncDeclaration 
+                [
+                    Leaf lambda
+                    Leaf (FuncName funcName)
+                    Leaf (ArgName argName)
+                    Leaf FuncDot
+                    Expression _ as body
+                ] -> FunctionDecl { funcName = funcName; argName = argName; body = cstToAstRec body }
+
             | FuncInvocation [Expression _ as func; Expression _ as arg] -> 
                 FunctionInvoke { func = cstToAstRec func; arg = cstToAstRec arg }
 
@@ -68,15 +77,14 @@ let cstToAst (astOpt : ParseTree option) : Ast option =
             | Boolean [Expression _ as lhs; Leaf Or; Expression _ as rhs] -> 
                 Bool { leftHandSide = cstToAstRec lhs; operator = Union; rightHandSide = cstToAstRec rhs }
 
-            | StringLookup [
-                            Expression str as toLookup
-                            Leaf OpenSquareBracket 
-                            Leaf (RegexLiteral re)
-                            Leaf CloseSquareBracket
-                ] -> StringReLookup {
-                        lookupSource = cstToAstRec toLookup
-                        regex = re    
-                    }
+            | StringLookup 
+                [
+                    Expression str as toLookup
+                    Leaf OpenSquareBracket 
+                    Leaf (RegexLiteral re)
+                    Leaf CloseSquareBracket
+                ] -> StringReLookup { lookupSource = cstToAstRec toLookup; regex = re }
+
             | _ -> Unknown
 
         match cstToAstRec ast with

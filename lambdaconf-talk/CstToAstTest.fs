@@ -153,3 +153,30 @@ let ``cstToAst - function invocation`` () =
         |> cstToAst
 
     Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``cstToAst - function declaration`` () =
+    let expected = 
+        FunctionDecl {
+            funcName = "funcName"
+            argName = "argName"
+            body = Lit "always return this value"
+        }
+        |> Some
+
+    let actual = 
+        Expression [
+            FuncDeclaration [
+                Leaf Lambda
+                Leaf (FuncName "funcName")
+                Leaf (ArgName "argName")
+                Leaf FuncDot
+                Expression [
+                    Leaf (Literal "always return this value")
+                ]
+            ]
+        ]
+        |> Some
+        |> cstToAst
+
+    Assert.AreEqual(expected, actual)
