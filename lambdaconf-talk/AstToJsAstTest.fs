@@ -33,6 +33,31 @@ let ``astToJsAst - literal`` () =
 
     areJsonEquivalent expected actual
 
+[<Test>]
+let ``astToJsAst - identifier`` () =
+    let expected = """
+        {
+            "type": "Program",
+            "body": [
+                {
+                    "type": "ExpressionStatement",
+                    "expression": {
+                        "type": "Identifier",
+                        "value": "identifier"
+                    }
+                }
+            ]
+        }
+    """
+    
+    let actual = 
+        Ident "identifier"
+        |> Some
+        |> astToJsAst
+        |> Option.get
+
+    areJsonEquivalent expected actual
+
 let ``astToJsAst - function invocation`` () =
     let expected = """
         {
