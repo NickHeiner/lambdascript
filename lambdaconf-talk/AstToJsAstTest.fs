@@ -33,7 +33,6 @@ let ``astToJsAst - literal`` () =
 
     areJsonEquivalent expected actual
 
-[<Test>]
 let ``astToJsAst - function invocation`` () =
     let expected = """
         {
