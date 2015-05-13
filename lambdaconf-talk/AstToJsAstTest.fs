@@ -143,3 +143,60 @@ let ``astToJsAst - function invocation with argument as expression`` () =
         |> Option.get
 
     areJsonEquivalent expected actual
+
+[<Test>]
+let ``astToJsAst - string lookup`` () =
+    let expected = """
+        {
+            "type": "Program",
+            "body": [
+                {
+                    "type": "ExpressionStatement",
+                    "expression": {
+                        "type": "MemberExpression",
+                        "computed": true,
+                        "object": {
+                            "type": "CallExpression",
+                            "callee": {
+                                "type": "MemberExpression",
+                                "computed": false,
+                                "object": {
+                                    "type": "Identifier",
+                                    "name": "str"
+                                },
+                                "property": {
+                                    "type": "Identifier",
+                                    "name": "match"
+                                }
+                            },
+                            "arguments": [
+                                {
+                                    "type": "Literal",
+                                    "value": "/(fe?)/",
+                                    "regex": {
+                                        "pattern": "(fe?)",
+                                        "flags": ""
+                                    }
+                                }
+                            ]
+                        },
+                        "property": {
+                            "type": "Literal",
+                            "value": 1
+                        }
+                    }
+                }
+            ]
+        }
+    """
+
+    let actual = 
+        StringReLookup {
+            lookupSource = Ident "str"
+            regex = "(fe?)"
+        }
+        |> Some
+        |> astToJsAst
+        |> Option.get
+
+    areJsonEquivalent expected actual

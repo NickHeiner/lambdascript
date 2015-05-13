@@ -19,14 +19,51 @@ let (astToJsAst : Ast option -> string option) = function
             let identObj (name : string) =
                 new JObject([typeProp "Identifier"; new JProperty("name", name)])
 
+            let callExpr (callee : JObject) (arguments : JObject) = 
+                new JObject([
+                                typeProp "CallExpression"
+                                new JProperty("callee", callee)
+                                new JProperty("arguments", new JArray([arguments]))
+                            ])
+
             match ast with
             | Lit value -> new JObject([typeProp "Literal"; new JProperty("value", value)])
-            | Ident name -> new JObject([typeProp "Identifier"; new JProperty("name", name)])
+            | Ident name -> identObj name
             | FunctionInvoke invocation -> 
                 let callee = astToJsAstRec invocation.func
                 let arguments = astToJsAstRec invocation.arg
 
-                new JObject([typeProp "CallExpression"; new JProperty("callee", callee); new JProperty("arguments", new JArray([arguments]))])
+                callExpr callee arguments
+
+            | StringReLookup strLookup -> 
+                let memberExpression (obj : JObject) (property : JObject) computed =
+                    new JObject([
+                                    typeProp "MemberExpression"
+                                    new JProperty("computed", sprintf "%b" computed)
+                                    new JProperty("object", obj)
+                                    new JProperty("property", property)
+                                ])
+
+                let regexMatch =
+                    let callee = 
+                        let propertyObj = new JObject([typeProp "Identifier"; new JProperty("name", "match")])
+                        let strToLookUp = astToJsAstRec strLookup.lookupSource
+                        memberExpression strToLookUp propertyObj false
+
+                    (* Not gonna lie this spacing is a bummer. *)
+                    let args = new JObject([
+                                                typeProp "Literal"
+                                                new JProperty("value", strLookup.regex)
+                                                new JProperty("regex", new JObject([
+                                                                                     new JProperty("pattern", sprintf "/%s/" strLookup.regex)
+                                                                                     new JProperty("flags", "")
+                                                                                     ]))
+                                            ])
+                
+                    callExpr callee args
+
+                let propertyObj = new JObject([typeProp "Literal"; new JProperty("value", 1)])
+                memberExpression regexMatch propertyObj true
 
             | _ -> JsAstGenerationError "not yet implemented" |> raise
 
