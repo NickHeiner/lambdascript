@@ -94,3 +94,52 @@ let ``astToJsAst - function invocation with identifier`` () =
         |> Option.get
 
     areJsonEquivalent expected actual
+
+[<Test>]
+let ``astToJsAst - function invocation with argument as expression`` () =
+    let expected = """
+        {
+        "type": "Program",
+        "body": [
+            {
+                "type": "ExpressionStatement",
+                "expression": {
+                    "type": "CallExpression",
+                    "callee": {
+                        "type": "Identifier",
+                        "name": "outer"
+                    },
+                    "arguments": [
+                        {
+                            "type": "CallExpression",
+                            "callee": {
+                                "type": "Identifier",
+                                "name": "innter"
+                            },
+                            "arguments": [
+                                {
+                                    "type": "Identifier",
+                                    "name": "argName"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+    """
+
+    let actual = 
+        FunctionInvoke {
+            func = Ident "outer"
+            arg = FunctionInvoke {
+                func = Ident "inner"
+                arg = Ident "argName"
+            }
+        }
+        |> Some
+        |> astToJsAst
+        |> Option.get
+
+    areJsonEquivalent expected actual
