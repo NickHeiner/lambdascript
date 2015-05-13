@@ -13,6 +13,7 @@ Grammar:
 
 *)
 
+(* TODO SententialForms is too broad - we know exactly how many arguments we are expecting *)
 type ParseTree = 
     | Expression of SententialForms
     | FuncDeclaration of SententialForms

@@ -5,6 +5,7 @@ open Tokenize
 open Lex
 open Grammar
 open BottomUpParse
+open CstToAst
 
 [<EntryPoint>]
 let rec main argv = 
@@ -16,6 +17,7 @@ let rec main argv =
             |> tokenize 
             |> lex 
             |> bottomUpParse
+            |> cstToAst
 
     match result with
     | Some any -> printfn "Compilation complete: %A" any; 0

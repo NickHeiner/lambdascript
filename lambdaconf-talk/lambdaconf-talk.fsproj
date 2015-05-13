@@ -66,6 +66,8 @@
     <Compile Include="Grammar.fs" />
     <Compile Include="BottomUpParse.fs" />
     <Compile Include="BottomUpParseTest.fs" />
+    <Compile Include="CstToAst.fs" />
+    <Compile Include="CstToAstTest.fs" />
     <Compile Include="Program.fs" />
     <None Include="sample.lambda" />
   </ItemGroup>
