@@ -2,7 +2,7 @@
 
 open EdgeJs
 
-let jsAstToJs _ = 
+let jsAstToJs json = 
     let edgeFunc = Edge.Func @"
         const escodegen = require('escodegen');
 
@@ -13,7 +13,7 @@ let jsAstToJs _ =
             return cb(null, generatedCode);
         };
     "
-
-    let task = edgeFunc.Invoke """{"type": "ExpressionStatement", "expression": {"type": "Literal", "value": true}}"""
+    
+    let task = edgeFunc.Invoke json
     task |> Async.AwaitTask |> ignore
     task.Result

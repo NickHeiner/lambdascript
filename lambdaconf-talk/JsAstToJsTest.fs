@@ -4,6 +4,7 @@ open NUnit.Framework
 open JsAstToJs
 
 [<Test>]
-let ``jsAstToJs - simple`` () =
-    let actual = jsAstToJs ""
-    Assert.AreEqual("true;", actual)
+let ``jsAstToJs - literal`` () =
+    let json = """{"type": "ExpressionStatement", "expression": {"type": "Literal", "value": "string literal"}}"""
+    let actual = jsAstToJs json
+    Assert.AreEqual("'string literal';", actual)
