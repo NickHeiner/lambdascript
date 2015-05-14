@@ -6,26 +6,26 @@ open Grammar
 
 let getMatchingRule = function
     (* Expressions *)
-    | [Leaf (Identifier ident)] as identifierLeaf -> Some (Expression identifierLeaf)
-    | [Leaf (Literal lit)] as literalLeaf -> Some (Expression literalLeaf)
-    | [FuncDeclaration children] as funcDecl -> Some (Expression funcDecl)
-    | [FuncInvocation children] as funcInvoke -> Some (Expression funcInvoke)
-    | [StringLookup children] as stringLookup -> Some (Expression stringLookup)
-    | [Boolean children] as boolean -> Some (Expression boolean)
-    | [Leaf OpenAngleBracket; Expression expr; Leaf CloseAngleBracket] as children -> Some (Expression children)
+    | [Leaf (Identifier _)] as identifierLeaf -> Some (Expression identifierLeaf)
+    | [Leaf (Literal _)] as literalLeaf -> Some (Expression literalLeaf)
+    | [FuncDeclaration _] as funcDecl -> Some (Expression funcDecl)
+    | [FuncInvocation _] as funcInvoke -> Some (Expression funcInvoke)
+    | [StringLookup _] as stringLookup -> Some (Expression stringLookup)
+    | [Boolean _] as boolean -> Some (Expression boolean)
+    | [Leaf OpenAngleBracket; Expression _; Leaf CloseAngleBracket] as children -> Some (Expression children)
 
     (* Functions *)
-    | [Leaf Lambda; Leaf (FuncName funcName); Leaf (ArgName arg); Leaf FuncDot; Expression e] as children -> 
+    | [Leaf Lambda; Leaf (FuncName _); Leaf (ArgName _); Leaf FuncDot; Expression _] as children -> 
         Some (FuncDeclaration children)
-    | [Expression expr; Expression expr'] as expressions -> Some (FuncInvocation expressions)
+    | [Expression _; Expression _] as expressions -> Some (FuncInvocation expressions)
     
     (* Booleans *)
-    | [Expression leftHandSide; Leaf Equality; Expression rightHandSide] as children -> Some (Boolean children)
-    | [Expression leftHandSide; Leaf Or; Expression rightHandSide] as children -> Some (Boolean children)
-    | [Expression leftHandSide; Leaf And; Expression rightHandSide] as children -> Some (Boolean children)
+    | [Expression _; Leaf Equality; Expression _] as children -> Some (Boolean children)
+    | [Expression _; Leaf Or; Expression _] as children -> Some (Boolean children)
+    | [Expression _; Leaf And; Expression _] as children -> Some (Boolean children)
     
     (* StringLookup *)
-    | [Expression str; Leaf OpenSquareBracket; Leaf (RegexLiteral re); Leaf CloseSquareBracket] as children -> 
+    | [Expression _; Leaf OpenSquareBracket; Leaf (RegexLiteral _); Leaf CloseSquareBracket] as children -> 
         Some (StringLookup children)
     
     (* We have no match *)
