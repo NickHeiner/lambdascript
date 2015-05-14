@@ -16,3 +16,17 @@ let ``lambdaToJs - string lookup`` () =
     let actual = lambdaToJs ["str[/ab(.)d/]"] |> Option.get
 
     Assert.AreEqual(expected, actual)
+    
+[<Test>]
+let ``lambdaToJs - nested bool`` () =
+    let expected = "foo || bar && baz;"
+    let actual = lambdaToJs ["foo or < bar and baz >"] |> Option.get
+
+    Assert.AreEqual(expected, actual)
+    
+[<Test>]
+let ``lambdaToJs - nested bool with or`` () =
+    let expected = "(foo || bar) && baz;"
+    let actual = lambdaToJs ["< foo or bar > and baz"] |> Option.get
+
+    Assert.AreEqual(expected, actual)
