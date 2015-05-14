@@ -2,18 +2,20 @@
 
 open EdgeJs
 
-let jsAstToJs json = 
-    let edgeFunc = Edge.Func @"
-        const escodegen = require('escodegen');
+let jsAstToJs = function
+    | None -> None
+    | Some json ->
+        let edgeFunc = Edge.Func @"
+            const escodegen = require('escodegen');
 
-        return function(jsAstStr, cb) {
-            const jsAst = JSON.parse(jsAstStr),
-                generatedCode = escodegen.generate(jsAst);
+            return function(jsAstStr, cb) {
+                const jsAst = JSON.parse(jsAstStr),
+                    generatedCode = escodegen.generate(jsAst);
 
-            return cb(null, generatedCode);
-        };
-    "
+                return cb(null, generatedCode);
+            };
+        "
     
-    let task = edgeFunc.Invoke json
-    task |> Async.AwaitTask |> ignore
-    task.Result
+        let task = edgeFunc.Invoke json
+        task |> Async.AwaitTask |> ignore
+        Some task.Result

@@ -1,11 +1,8 @@
 ﻿module Program
 
 open ReadFile
-open Tokenize
-open Lex
-open Grammar
-open BottomUpParse
-open CstToAst
+
+open LambdaToJs
 
 [<EntryPoint>]
 let rec main argv = 
@@ -14,10 +11,7 @@ let rec main argv =
     
     let result = 
         GetFileContents entryPoint 
-            |> tokenize 
-            |> lex 
-            |> bottomUpParse
-            |> cstToAst
+        |> lambdaToJs
 
     match result with
     | Some any -> printfn "Compilation complete: %A" any; 0

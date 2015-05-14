@@ -72,6 +72,8 @@
     <Compile Include="AstToJsAstTest.fs" />
     <Compile Include="JsAstToJs.fs" />
     <Compile Include="JsAstToJsTest.fs" />
+    <Compile Include="LambdaToJs.fs" />
+    <Compile Include="LambdaToJsTest.fs" />
     <Compile Include="Program.fs" />
     <None Include="sample.lambda" />
     <None Include="edge\x86\node.dll">
@@ -92,7 +94,6 @@
     <Content Include="edge\double_edge.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EdgeJs">
