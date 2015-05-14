@@ -1,4 +1,4 @@
-﻿λ isPalindrome str .
+﻿λ @isPalindrome :str .
 	str is "" or <
 		str[/^(.)/] is str[/.*(.)$/] 
 		and isPalindrome str[/^.(.*)./]
