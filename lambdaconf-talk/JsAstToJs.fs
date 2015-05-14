@@ -4,10 +4,10 @@ open EdgeJs
 
 let jsAstToJs _ = 
     let edgeFunc = Edge.Func @"
-        var escodegen = require('escodegen');
+        const escodegen = require('escodegen');
 
         return function(jsAstStr, cb) {
-            var jsAst = JSON.parse(jsAstStr),
+            const jsAst = JSON.parse(jsAstStr),
                 generatedCode = escodegen.generate(jsAst);
 
             return cb(null, generatedCode);
