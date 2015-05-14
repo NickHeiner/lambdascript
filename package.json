@@ -1,0 +1,22 @@
+{
+  "name": "lambdaconf-talk",
+  "version": "0.0.0",
+  "description": "The nodejs component of the f# library",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NickHeiner/lambdaconf-talk.git"
+  },
+  "author": "Nick Heiner <nth23@cornell.edu>",
+  "bugs": {
+    "url": "https://github.com/NickHeiner/lambdaconf-talk/issues"
+  },
+  "homepage": "https://github.com/NickHeiner/lambdaconf-talk#readme",
+  "dependencies": {
+    "escodegen": "^1.6.1"
+  }
+}
