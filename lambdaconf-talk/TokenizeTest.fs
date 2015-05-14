@@ -11,8 +11,8 @@ let ``tokenize - no input`` () =
     
 [<Test>]
 let ``tokenize - some input`` () = 
-    let actual = tokenize ["λ @x :ignoredArg . 1"]
-    let expected = ["λ"; "@x"; ":ignoredArg"; "."; "1"]
+    let actual = tokenize ["λ @x :x . x"]
+    let expected = ["λ"; "@x"; ":x"; "."; "x"]
     Assert.AreEqual(expected, actual)
 
 [<Test>]

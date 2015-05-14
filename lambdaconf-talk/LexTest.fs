@@ -9,12 +9,12 @@ let ``lex - no input`` () =
 
 [<Test>]
 let ``lex - some input`` () = 
-    let actual = lex ["λ"; "x"; "."; "1"]
+    let actual = lex ["λ"; "x"; "."; "x"]
     let expected = [
         Lambda;
         Identifier "x";
         FuncDot;
-        Identifier "1"
+        Identifier "x"
     ]
     Assert.AreEqual(expected, actual)
     
