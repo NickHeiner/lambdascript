@@ -6,4 +6,4 @@ open JsAstToJs
 [<Test>]
 let ``jsAstToJs - simple`` () =
     let actual = jsAstToJs ""
-    Assert.AreEqual(2, actual)
+    Assert.AreEqual("true;", actual)
