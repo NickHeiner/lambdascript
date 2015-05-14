@@ -4,7 +4,7 @@ open NUnit.Framework
 open LambdaToJs
 
 [<Test>]
-let ``lambdaToJs - method call`` () =
+let ``lambdaToJs - function invocation`` () =
     let expected = "print(isPalindrome('racecar'));"
     let actual = lambdaToJs ["""print < isPalindrome "racecar" > """] |> Option.get
 
