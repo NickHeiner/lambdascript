@@ -63,6 +63,8 @@
     <Compile Include="TokenizeTest.fs" />
     <Compile Include="Lex.fs" />
     <Compile Include="LexTest.fs" />
+    <Compile Include="ReLex.fs" />
+    <Compile Include="ReLexTest.fs" />
     <Compile Include="Grammar.fs" />
     <Compile Include="BottomUpParse.fs" />
     <Compile Include="BottomUpParseTest.fs" />
