@@ -9,9 +9,10 @@ let ``lex - no input`` () =
 
 [<Test>]
 let ``lex - some input`` () = 
-    let actual = lex ["λ"; "x"; "."; "x"]
+    let actual = lex ["λ"; "f"; "x"; "."; "x"]
     let expected = [
         Lambda;
+        Identifier "f";
         Identifier "x";
         FuncDot;
         Identifier "x"
@@ -20,10 +21,11 @@ let ``lex - some input`` () =
     
 [<Test>]
 let ``lex - different identifier`` () = 
-    let actual = lex ["λ"; "f"; "."; "1"]
+    let actual = lex ["λ"; "f"; "ignored"; "."; "1"]
     let expected = [
         Lambda;
         Identifier "f";
+        Identifier "ignored";
         FuncDot;
         Identifier "1"
     ]
@@ -77,11 +79,3 @@ let ``lex - Or`` () =
 [<Test>]
 let ``lex - RegexLiteral`` () =
     Assert.AreEqual([RegexLiteral ".*"], lex ["/.*/"])
-
-[<Test>]
-let ``lex - FuncName`` () =
-    Assert.AreEqual([FuncName "getFoo"], lex ["@getFoo"])
-
-[<Test>]
-let ``lex - ArgName`` () =
-    Assert.AreEqual([ArgName "notTheBees"], lex [":notTheBees"])

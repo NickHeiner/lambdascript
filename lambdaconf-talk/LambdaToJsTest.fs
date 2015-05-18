@@ -34,6 +34,6 @@ let ``lambdaToJs - nested bool with or`` () =
 [<Test>]
 let ``lambdaToJs - function declaration`` () =
     let expected = "function f(x) {\n    return 'retVal';\n}"
-    let actual = lambdaToJs ["""λ @f :x . "retVal" """] |> Option.get
+    let actual = lambdaToJs ["""λ f x . "retVal" """] |> Option.get
 
     Assert.AreEqual(expected, actual)
