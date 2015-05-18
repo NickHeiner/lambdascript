@@ -74,9 +74,9 @@ let bottomUpParse lexSymbols =
 
     let rec parseStep (parseStack : ParseTree list) (input : ParseTree list) : ParseTree option =
         match tryFindHandle parseStack with
-        (* Reduce *)
+        (* We found a handle, so reduce that handle to its resulting expression *)
         | Some nextParseStack -> parseStep nextParseStack input
-        (* Shift *)
+        (* We found no handle, so shift the next token on to the parse stack *)
         | None ->
             match shift parseStack input with
             (* If we have no more input, we can make a decision now as to whether or not our input is valid. *)
