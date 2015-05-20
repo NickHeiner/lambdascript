@@ -324,3 +324,36 @@ let ``astToJsAst - function declaration`` () =
         |> Option.get
 
     areJsonEquivalent expected actual
+
+[<Test>]
+let ``astToJsAst - expression list`` () =
+    let expected = """
+        {
+            "type": "Program",
+            "body": [
+                {
+                    "type": "ExpressionStatement",
+                    "expression": {
+                        "type": "Identifier",
+                        "name": "x"
+                    }
+                },
+                
+                {
+                    "type": "ExpressionStatement",
+                    "expression": {
+                        "type": "Identifier",
+                        "name": "y"
+                    }
+                }
+            ]
+        }
+    """
+    
+    let actual = 
+        ExpressionList (Ident "x", Ident "y")
+        |> Some
+        |> astToJsAst
+        |> Option.get
+
+    areJsonEquivalent expected actual
