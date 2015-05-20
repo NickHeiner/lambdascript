@@ -55,7 +55,15 @@ let ``lambdaToJs - print statement`` () =
 
 [<Test>]
 let ``lambdaToJs - expression list`` () =
-    let expected = "var print = console.log.bind(console);\nfunction id(x) {\n    return x;\n}\nid('hello')"
-    let actual = lambdaToJs ["""λ f x . x; f "hello" """] |> Option.get
+    (* It's a little funky that there are parens around the function declaration. 
+        I think that's because I'm declaring it as an expression statement. *)
+    let expected = "var print = console.log.bind(console);
+(function () {
+    (function f(x) {
+        return x;
+    });
+    return f('hello');
+}());"
+    let actual = lambdaToJs ["""< λ f x . x >; f "hello" """] |> Option.get
 
     Assert.AreEqual(expected, actual)
