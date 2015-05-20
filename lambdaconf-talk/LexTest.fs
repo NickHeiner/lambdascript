@@ -82,4 +82,5 @@ let ``lex - RegexLiteral`` () =
 
 [<Test>]
 let ``lex - expression list`` () =
-    Assert.AreEqual([Identifier "x"; ExpressionSep], lex ["x;"])
+    let actual = lex ["x"; ";"]
+    Assert.AreEqual([Identifier "x"; ExpressionSep], actual)

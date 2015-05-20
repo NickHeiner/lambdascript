@@ -38,6 +38,7 @@ let lex =
         | "is" -> Equality
         | "and" -> And
         | "or" -> Or
+        | ";" -> ExpressionSep
         | FirstRegexGroup "\"(.*)\"" str -> Literal str
         | FirstRegexGroup "/(.*)/" regexContents -> RegexLiteral regexContents
         | _ -> Identifier token
