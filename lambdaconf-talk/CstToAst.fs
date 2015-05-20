@@ -57,6 +57,8 @@ let cstToAst (astOpt : ParseTree option) : Ast option =
             
             | Expression [Leaf OpenAngleBracket; Expression _ as expr; Leaf CloseAngleBracket] -> cstToAstRec expr
             | Expression (hd::tl) when List.isEmpty tl -> cstToAstRec hd
+            | Expression [Expression _ as expr; Leaf ExpressionSep; Expression _ as expr'] -> 
+                ExpressionList (cstToAstRec expr, cstToAstRec expr')
 
             | FuncDeclaration 
                 [
