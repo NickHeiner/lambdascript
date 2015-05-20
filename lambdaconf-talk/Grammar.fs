@@ -5,7 +5,7 @@ open Lex
 (* 
 
 Grammar: 
-	Expr -> FuncDecl | FuncInvocation | StringLookup | Boolean | < Expr > | identifier | literal
+	Expr -> FuncDecl | FuncInvocation | StringLookup | Boolean | < Expr > | identifier | literal | Expr ; Expr
 	FuncDecl -> lambda funcName argName funcDot Expr
 	FuncInvocation -> Expr Expr
 	StringLookup -> Expr [ regex ]
