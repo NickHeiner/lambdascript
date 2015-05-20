@@ -37,7 +37,7 @@ let ``lambdaToJs - nested bool with or`` () =
     
 [<Test>]
 let ``lambdaToJs - function declaration`` () =
-    let expected = "var print = console.log.bind(console);\nfunction f(x) {\n    return 'retVal';\n}"
+    let expected = "var print = console.log.bind(console);\nvar f = function f(x) {\n    return 'retVal';\n};"
     let actual = lambdaToJs ["""λ f x . "retVal" """] |> Option.get
 
     Assert.AreEqual(expected, actual)
@@ -55,15 +55,9 @@ let ``lambdaToJs - print statement`` () =
 
 [<Test>]
 let ``lambdaToJs - expression list`` () =
-    (* It's a little funky that there are parens around the function declaration. 
-        I think that's because I'm declaring it as an expression statement. *)
-    let expected = "var print = console.log.bind(console);
-(function () {
-    (function f(x) {
-        return x;
-    });
-    return f('hello');
-}());"
+    (* I am not sure why there are two ;; *)
+    let expected = "var print = console.log.bind(console);\n(function () {\n"
+                    + "    var f = function f(x) {\n        return x;\n    };;\n    return f('hello');\n}());"
     let actual = lambdaToJs ["""< λ f x . x >; f "hello" """] |> Option.get
 
     Assert.AreEqual(expected, actual)

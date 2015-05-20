@@ -126,14 +126,28 @@ let (astToJsAst : Ast option -> string option) = function
                                     )
                                 ])
 
+                let varDeclaration = 
+                    let funcExpression = 
+                        new JObject([
+                                    typeProp "FunctionExpression"
+                                    new JProperty("id", idObj)
+                                    new JProperty("params", paramsObj)
+                                    new JProperty("defaults", new JArray([]))
+                                    new JProperty("body", blockStatement)
+                                    new JProperty("generator", false)
+                                    new JProperty("expression", false)
+                                    ])
+
+                    new JObject([
+                                typeProp "VariableDeclarator"
+                                new JProperty("id", idObj)
+                                new JProperty("init", funcExpression)
+                                ])
+
                 new JObject([
-                            typeProp "FunctionDeclaration"
-                            new JProperty("id", idObj)
-                            new JProperty("params", paramsObj)
-                            new JProperty("defaults", new JArray([]))
-                            new JProperty("body", blockStatement)
-                            new JProperty("generator", false)
-                            new JProperty("expression", false)
+                            typeProp "VariableDeclaration"
+                            new JProperty("declarations", new JArray([varDeclaration]))
+                            new JProperty("kind", "var")
                             ])
 
             (* TODO: This is a failure to use the type system properly. *)
@@ -142,7 +156,8 @@ let (astToJsAst : Ast option -> string option) = function
         let body = 
             let innerJsAstWrapped = 
                 let innerJsAst = astToJsAstRec ast
-                if (innerJsAst.GetValue "type").ToString() = "FunctionDeclaration" 
+                (* This is a bit of a hack. *)
+                if (innerJsAst.GetValue "type").ToString() = "VariableDeclaration" 
                 then innerJsAst 
                 else inExpressionStatement innerJsAst
 

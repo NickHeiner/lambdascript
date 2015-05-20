@@ -282,32 +282,45 @@ let ``astToJsAst - function declaration`` () =
             "type": "Program",
             "body": [
                 {
-                    "type": "FunctionDeclaration",
-                    "id": {
-                        "type": "Identifier",
-                        "name": "f"
-                    },
-                    "params": [
+                    "type": "VariableDeclaration",
+                    "declarations": [
                         {
-                            "type": "Identifier",
-                            "name": "x"
+                            "type": "VariableDeclarator",
+                            "id": {
+                                "type": "Identifier",
+                                "name": "f"
+                            },
+                            "init": {
+                                "type": "FunctionExpression",
+                                "id": {
+                                    "type": "Identifier",
+                                    "name": "f"
+                                },
+                                "params": [
+                                    {
+                                        "type": "Identifier",
+                                        "name": "x"
+                                    }
+                                ],
+                                "defaults": [],
+                                "body": {
+                                    "type": "BlockStatement",
+                                    "body": [
+                                        {
+                                            "type": "ReturnStatement",
+                                            "argument": {
+                                                "type": "Literal",
+                                                "value": "constant value"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "generator": false,
+                                "expression": false
+                            }
                         }
                     ],
-                    "defaults": [],
-                    "body": {
-                        "type": "BlockStatement",
-                        "body": [
-                            {
-                                "type": "ReturnStatement",
-                                "argument": {
-                                    "type": "Literal",
-                                    "value": "constant value"
-                                }
-                            }
-                        ]
-                    },
-                    "generator": false,
-                    "expression": false
+                    "kind": "var"
                 }
             ]
         }
