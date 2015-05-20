@@ -78,6 +78,7 @@
     <Compile Include="AddStdLibTest.fs" />
     <Compile Include="LambdaToJs.fs" />
     <Compile Include="LambdaToJsTest.fs" />
+    <Compile Include="ProgramTest.fs" />
     <Compile Include="Program.fs" />
     <None Include="sample.lambda" />
     <None Include="edge\x86\node.dll">
