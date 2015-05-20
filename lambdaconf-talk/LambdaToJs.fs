@@ -8,6 +8,7 @@ open BottomUpParse
 open CstToAst
 open AstToJsAst
 open JsAstToJs
+open AddStdLib
 
 let lambdaToJs =
     tokenize
@@ -17,3 +18,4 @@ let lambdaToJs =
     >> cstToAst
     >> astToJsAst
     >> jsAstToJs
+    >> addStdLib

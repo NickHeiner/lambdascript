@@ -2,7 +2,7 @@
 
 open EdgeJs
 
-let jsAstToJs = function
+let (jsAstToJs : string option -> string option) = function
     | None -> None
     | Some json ->
         let edgeFunc = Edge.Func @"
@@ -18,4 +18,4 @@ let jsAstToJs = function
     
         let task = edgeFunc.Invoke json
         task |> Async.AwaitTask |> ignore
-        Some task.Result
+        task.Result :?> string |> Some
