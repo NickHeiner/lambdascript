@@ -8,7 +8,7 @@ let ``program - run sample.lambda`` () =
         System.Diagnostics.Process.Start
             ("lambdaconf_talk.exe", "..\..\sample.lambda")
 
-    testProc.WaitForExit ()
+    testProc.WaitForExit()
 
     Assert.AreEqual(0, testProc.ExitCode)
 
