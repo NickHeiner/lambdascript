@@ -61,3 +61,21 @@ let ``lambdaToJs - expression list`` () =
     let actual = lambdaToJs ["""< λ f x . x >; f "hello" """] |> Option.get
 
     Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``lambdaToJs - sample`` () =
+    let input = 
+        ["λ isPalindrome str ."
+         "str is \"\" or <"
+         "str[/^(.)/] is str[/.*(.)$/]"
+         " and isPalindrome str[/^.(.*)./]"
+         ">;"
+         ""
+         "< print <isPalindrome \"racecar\"> >;"
+         "print <isPalindrome \"not-a-palindrome\">"
+       ]
+
+    let expected = "var print = console.log.bind(console);\nvar isPalindrome = function isPalindrome(str) {\n    return str === ('' || function () {\n        str.match('^(.)')[1] === (str.match('.*(.)$')[1] && isPalindrome(str.match('^.(.*).')[1]));\n        return function () {\n            print(isPalindrome('racecar'));\n            return print(isPalindrome('not-a-palindrome'));\n        }();\n    }());\n};"
+    let actual = lambdaToJs input |> Option.get
+
+    Assert.AreEqual(expected, actual)

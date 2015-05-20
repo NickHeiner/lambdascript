@@ -4,5 +4,5 @@
 		and isPalindrome str[/^.(.*)./]
 	>;
 
-print <isPalindrome "racecar">;
-print <isPalindrome "not a palindrome">;
+< print <isPalindrome "racecar"> >;
+print <isPalindrome "not-a-palindrome">
