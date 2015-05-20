@@ -74,6 +74,8 @@
     <Compile Include="AstToJsAstTest.fs" />
     <Compile Include="JsAstToJs.fs" />
     <Compile Include="JsAstToJsTest.fs" />
+    <Compile Include="AddStdLib.fs" />
+    <Compile Include="AddStdLibTest.fs" />
     <Compile Include="LambdaToJs.fs" />
     <Compile Include="LambdaToJsTest.fs" />
     <Compile Include="Program.fs" />
