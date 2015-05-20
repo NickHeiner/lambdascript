@@ -19,11 +19,15 @@ let (astToJsAst : Ast option -> string option) = function
             let identObj (name : string) =
                 new JObject([typeProp "Identifier"; new JProperty("name", name)])
 
-            let callExpr (callee : JObject) (arguments : JObject) = 
+            let callExpr (callee : JObject) (arguments : JObject option) = 
+                let argMembers = match arguments with
+                           | Some arg -> [arguments]
+                           | None -> []
+
                 new JObject([
                                 typeProp "CallExpression"
                                 new JProperty("callee", callee)
-                                new JProperty("arguments", new JArray([arguments]))
+                                new JProperty("arguments", new JArray(argMembers))
                             ])
 
             match ast with
@@ -33,7 +37,7 @@ let (astToJsAst : Ast option -> string option) = function
                 let callee = astToJsAstRec invocation.func
                 let arguments = astToJsAstRec invocation.arg
 
-                callExpr callee arguments
+                callExpr callee (Some arguments)
 
             | StringReLookup strLookup -> 
                 let memberExpression (obj : JObject) (property : JObject) (computed : bool) =
@@ -60,7 +64,7 @@ let (astToJsAst : Ast option -> string option) = function
                                                                                      ]))
                                             ])
                 
-                    callExpr callee args
+                    callExpr callee (Some args)
 
                 let propertyObj = new JObject([typeProp "Literal"; new JProperty("value", 1)])
                 memberExpression regexMatch propertyObj true
@@ -77,6 +81,32 @@ let (astToJsAst : Ast option -> string option) = function
                                 new JProperty("left", astToJsAstRec boolExpr.leftHandSide)
                                 new JProperty("right", astToJsAstRec boolExpr.rightHandSide)
                             ])
+
+            | ExpressionList (e, e') -> 
+                let selfInvokingFunc = 
+                    let blockStatement = 
+                        let returnVal = astToJsAstRec e'
+                        new JObject([
+                                    typeProp "BlockStatement"
+                                    new JProperty("body", 
+                                        new JArray([
+                                                   astToJsAstRec e
+                                                   new JObject([typeProp "ReturnStatement"; new JProperty("argument", returnVal)])
+                                                  ])
+                                        )
+                                    ])
+
+
+                    new JObject([
+                                typeProp "FunctionExpression"
+                                new JProperty("id", null)
+                                new JProperty("params", new JArray([]))
+                                new JProperty("defaults", new JArray([]))
+                                new JProperty("body", blockStatement)
+                                new JProperty("generator", false)
+                                new JProperty("expression", false)
+                                ])
+                callExpr selfInvokingFunc None 
 
             | FunctionDecl funcDecl -> 
                 let idObj = identObj funcDecl.funcName
