@@ -46,6 +46,7 @@ and Ast =
     | Unknown
 
 let cstToAst (astOpt : ParseTree option) : Ast option = 
+    logStep "transforming CST to AST"
     match astOpt with
     | None -> None
     | Some ast -> 

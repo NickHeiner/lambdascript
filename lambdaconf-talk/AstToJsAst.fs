@@ -4,10 +4,13 @@ open Newtonsoft.Json
 open Newtonsoft.Json.Linq
 
 open CstToAst
+open Util
 
 exception JsAstGenerationError of string
 
-let (astToJsAst : Ast option -> string option) = function
+let astToJsAst astOpt = 
+    logStep "transforming lambda script AST to js AST"
+    match astOpt with
     | None -> None
     | Some ast -> 
         let typeProp (value : string) = new JProperty("type", value)
