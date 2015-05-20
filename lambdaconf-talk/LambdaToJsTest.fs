@@ -52,3 +52,10 @@ let ``lambdaToJs - print statement`` () =
     let actual = lambdaToJs ["""print "hello" """] |> Option.get
 
     Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``lambdaToJs - expression list`` () =
+    let expected = "var print = console.log.bind(console);\nfunction id(x) {\n    return x;\n}\nid('hello')"
+    let actual = lambdaToJs ["""λ f x . x; f "hello" """] |> Option.get
+
+    Assert.AreEqual(expected, actual)
