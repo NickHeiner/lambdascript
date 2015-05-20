@@ -40,6 +40,7 @@ and Ast =
     | StringReLookup of StringLookupInfo
     | Lit of string
     | Ident of string
+    | ExpressionList of (Ast * Ast)
 
     (* This is just to avoid writing "|> Some" all over the place *)
     | Unknown

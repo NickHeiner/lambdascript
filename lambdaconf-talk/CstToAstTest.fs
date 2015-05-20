@@ -180,3 +180,24 @@ let ``cstToAst - function declaration`` () =
         |> cstToAst
 
     Assert.AreEqual(expected, actual)
+    
+[<Test>]
+let ``cstToAst - expression list`` () =
+    let expected = 
+        ExpressionList (Ident "x", Ident "y")
+        |> Some
+
+    let actual = 
+        Expression [
+            Expression [
+                Leaf (Identifier "x")
+            ]
+            Leaf ExpressionSep
+            Expression [
+                Leaf (Identifier "y")
+            ]
+        ]
+        |> Some
+        |> cstToAst
+
+    Assert.AreEqual(expected, actual)
