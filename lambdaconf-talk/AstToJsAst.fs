@@ -21,8 +21,8 @@ let (astToJsAst : Ast option -> string option) = function
 
             let callExpr (callee : JObject) (arguments : JObject option) = 
                 let argMembers = match arguments with
-                           | Some arg -> [arguments]
-                           | None -> []
+                                 | Some arg -> [arg]
+                                 | None -> []
 
                 new JObject([
                                 typeProp "CallExpression"
@@ -84,14 +84,16 @@ let (astToJsAst : Ast option -> string option) = function
 
             | ExpressionList (e, e') -> 
                 let selfInvokingFunc = 
-                    let blockStatement = 
-                        let returnVal = astToJsAstRec e'
+                    let blockStatement =
                         new JObject([
                                     typeProp "BlockStatement"
                                     new JProperty("body", 
                                         new JArray([
-                                                   astToJsAstRec e
-                                                   new JObject([typeProp "ReturnStatement"; new JProperty("argument", returnVal)])
+                                                   astToJsAstRec e |> inExpressionStatement
+                                                   new JObject([
+                                                               typeProp "ReturnStatement"
+                                                               new JProperty("argument", astToJsAstRec e')
+                                                              ])
                                                   ])
                                         )
                                     ])
@@ -106,6 +108,7 @@ let (astToJsAst : Ast option -> string option) = function
                                 new JProperty("generator", false)
                                 new JProperty("expression", false)
                                 ])
+
                 callExpr selfInvokingFunc None 
 
             | FunctionDecl funcDecl -> 

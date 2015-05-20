@@ -334,16 +334,35 @@ let ``astToJsAst - expression list`` () =
                 {
                     "type": "ExpressionStatement",
                     "expression": {
-                        "type": "Identifier",
-                        "name": "x"
-                    }
-                },
-                
-                {
-                    "type": "ExpressionStatement",
-                    "expression": {
-                        "type": "Identifier",
-                        "name": "y"
+                        "type": "CallExpression",
+                        "callee": {
+                            "type": "FunctionExpression",
+                            "id": null,
+                            "params": [],
+                            "defaults": [],
+                            "body": {
+                                "type": "BlockStatement",
+                                "body": [
+                                    {
+                                        "type": "ExpressionStatement",
+                                        "expression": {
+                                            "type": "Identifier",
+                                            "name": "x"
+                                        }
+                                    },
+                                    {
+                                        "type": "ReturnStatement",
+                                        "argument": {
+                                            "type": "Identifier",
+                                            "name": "y"
+                                        }
+                                    }
+                                ]
+                            },
+                            "generator": false,
+                            "expression": false
+                        },
+                        "arguments": []
                     }
                 }
             ]
@@ -357,3 +376,7 @@ let ``astToJsAst - expression list`` () =
         |> Option.get
 
     areJsonEquivalent expected actual
+
+let _ = """
+{"type":"Program","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"Identifier","name":"x"},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"y"}}]},"generator":false,"expression":false},"arguments":[]}}]}
+"""
