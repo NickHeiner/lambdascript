@@ -18,6 +18,7 @@ type LexSymbol =
     | Equality
     | And
     | Or
+    | ExpressionSep
     | RegexLiteral of string
 
 let lex = 
