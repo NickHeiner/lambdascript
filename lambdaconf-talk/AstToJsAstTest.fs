@@ -282,32 +282,45 @@ let ``astToJsAst - function declaration`` () =
             "type": "Program",
             "body": [
                 {
-                    "type": "FunctionDeclaration",
-                    "id": {
-                        "type": "Identifier",
-                        "name": "f"
-                    },
-                    "params": [
+                    "type": "VariableDeclaration",
+                    "declarations": [
                         {
-                            "type": "Identifier",
-                            "name": "x"
+                            "type": "VariableDeclarator",
+                            "id": {
+                                "type": "Identifier",
+                                "name": "f"
+                            },
+                            "init": {
+                                "type": "FunctionExpression",
+                                "id": {
+                                    "type": "Identifier",
+                                    "name": "f"
+                                },
+                                "params": [
+                                    {
+                                        "type": "Identifier",
+                                        "name": "x"
+                                    }
+                                ],
+                                "defaults": [],
+                                "body": {
+                                    "type": "BlockStatement",
+                                    "body": [
+                                        {
+                                            "type": "ReturnStatement",
+                                            "argument": {
+                                                "type": "Literal",
+                                                "value": "constant value"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "generator": false,
+                                "expression": false
+                            }
                         }
                     ],
-                    "defaults": [],
-                    "body": {
-                        "type": "BlockStatement",
-                        "body": [
-                            {
-                                "type": "ReturnStatement",
-                                "argument": {
-                                    "type": "Literal",
-                                    "value": "constant value"
-                                }
-                            }
-                        ]
-                    },
-                    "generator": false,
-                    "expression": false
+                    "kind": "var"
                 }
             ]
         }
@@ -324,3 +337,59 @@ let ``astToJsAst - function declaration`` () =
         |> Option.get
 
     areJsonEquivalent expected actual
+
+[<Test>]
+let ``astToJsAst - expression list`` () =
+    let expected = """
+        {
+            "type": "Program",
+            "body": [
+                {
+                    "type": "ExpressionStatement",
+                    "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                            "type": "FunctionExpression",
+                            "id": null,
+                            "params": [],
+                            "defaults": [],
+                            "body": {
+                                "type": "BlockStatement",
+                                "body": [
+                                    {
+                                        "type": "ExpressionStatement",
+                                        "expression": {
+                                            "type": "Identifier",
+                                            "name": "x"
+                                        }
+                                    },
+                                    {
+                                        "type": "ReturnStatement",
+                                        "argument": {
+                                            "type": "Identifier",
+                                            "name": "y"
+                                        }
+                                    }
+                                ]
+                            },
+                            "generator": false,
+                            "expression": false
+                        },
+                        "arguments": []
+                    }
+                }
+            ]
+        }
+    """
+    
+    let actual = 
+        ExpressionList (Ident "x", Ident "y")
+        |> Some
+        |> astToJsAst
+        |> Option.get
+
+    areJsonEquivalent expected actual
+
+let _ = """
+{"type":"Program","body":[{"type":"ExpressionStatement","expression":{"type":"CallExpression","callee":{"type":"FunctionExpression","id":null,"params":[],"defaults":[],"body":{"type":"BlockStatement","body":[{"type":"Identifier","name":"x"},{"type":"ReturnStatement","argument":{"type":"Identifier","name":"y"}}]},"generator":false,"expression":false},"arguments":[]}}]}
+"""

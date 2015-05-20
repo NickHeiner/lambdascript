@@ -19,11 +19,15 @@ let (astToJsAst : Ast option -> string option) = function
             let identObj (name : string) =
                 new JObject([typeProp "Identifier"; new JProperty("name", name)])
 
-            let callExpr (callee : JObject) (arguments : JObject) = 
+            let callExpr (callee : JObject) (arguments : JObject option) = 
+                let argMembers = match arguments with
+                                 | Some arg -> [arg]
+                                 | None -> []
+
                 new JObject([
                                 typeProp "CallExpression"
                                 new JProperty("callee", callee)
-                                new JProperty("arguments", new JArray([arguments]))
+                                new JProperty("arguments", new JArray(argMembers))
                             ])
 
             match ast with
@@ -33,7 +37,7 @@ let (astToJsAst : Ast option -> string option) = function
                 let callee = astToJsAstRec invocation.func
                 let arguments = astToJsAstRec invocation.arg
 
-                callExpr callee arguments
+                callExpr callee (Some arguments)
 
             | StringReLookup strLookup -> 
                 let memberExpression (obj : JObject) (property : JObject) (computed : bool) =
@@ -60,7 +64,7 @@ let (astToJsAst : Ast option -> string option) = function
                                                                                      ]))
                                             ])
                 
-                    callExpr callee args
+                    callExpr callee (Some args)
 
                 let propertyObj = new JObject([typeProp "Literal"; new JProperty("value", 1)])
                 memberExpression regexMatch propertyObj true
@@ -78,6 +82,35 @@ let (astToJsAst : Ast option -> string option) = function
                                 new JProperty("right", astToJsAstRec boolExpr.rightHandSide)
                             ])
 
+            | ExpressionList (e, e') -> 
+                let selfInvokingFunc = 
+                    let blockStatement =
+                        new JObject([
+                                    typeProp "BlockStatement"
+                                    new JProperty("body", 
+                                        new JArray([
+                                                   astToJsAstRec e |> inExpressionStatement
+                                                   new JObject([
+                                                               typeProp "ReturnStatement"
+                                                               new JProperty("argument", astToJsAstRec e')
+                                                              ])
+                                                  ])
+                                        )
+                                    ])
+
+
+                    new JObject([
+                                typeProp "FunctionExpression"
+                                new JProperty("id", null)
+                                new JProperty("params", new JArray([]))
+                                new JProperty("defaults", new JArray([]))
+                                new JProperty("body", blockStatement)
+                                new JProperty("generator", false)
+                                new JProperty("expression", false)
+                                ])
+
+                callExpr selfInvokingFunc None 
+
             | FunctionDecl funcDecl -> 
                 let idObj = identObj funcDecl.funcName
                 let paramsObj = new JArray([identObj funcDecl.argName])
@@ -93,14 +126,28 @@ let (astToJsAst : Ast option -> string option) = function
                                     )
                                 ])
 
+                let varDeclaration = 
+                    let funcExpression = 
+                        new JObject([
+                                    typeProp "FunctionExpression"
+                                    new JProperty("id", idObj)
+                                    new JProperty("params", paramsObj)
+                                    new JProperty("defaults", new JArray([]))
+                                    new JProperty("body", blockStatement)
+                                    new JProperty("generator", false)
+                                    new JProperty("expression", false)
+                                    ])
+
+                    new JObject([
+                                typeProp "VariableDeclarator"
+                                new JProperty("id", idObj)
+                                new JProperty("init", funcExpression)
+                                ])
+
                 new JObject([
-                            typeProp "FunctionDeclaration"
-                            new JProperty("id", idObj)
-                            new JProperty("params", paramsObj)
-                            new JProperty("defaults", new JArray([]))
-                            new JProperty("body", blockStatement)
-                            new JProperty("generator", false)
-                            new JProperty("expression", false)
+                            typeProp "VariableDeclaration"
+                            new JProperty("declarations", new JArray([varDeclaration]))
+                            new JProperty("kind", "var")
                             ])
 
             (* TODO: This is a failure to use the type system properly. *)
@@ -109,7 +156,8 @@ let (astToJsAst : Ast option -> string option) = function
         let body = 
             let innerJsAstWrapped = 
                 let innerJsAst = astToJsAstRec ast
-                if (innerJsAst.GetValue "type").ToString() = "FunctionDeclaration" 
+                (* This is a bit of a hack. *)
+                if (innerJsAst.GetValue "type").ToString() = "VariableDeclaration" 
                 then innerJsAst 
                 else inExpressionStatement innerJsAst
 

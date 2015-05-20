@@ -37,7 +37,7 @@ let ``lambdaToJs - nested bool with or`` () =
     
 [<Test>]
 let ``lambdaToJs - function declaration`` () =
-    let expected = "var print = console.log.bind(console);\nfunction f(x) {\n    return 'retVal';\n}"
+    let expected = "var print = console.log.bind(console);\nvar f = function f(x) {\n    return 'retVal';\n};"
     let actual = lambdaToJs ["""λ f x . "retVal" """] |> Option.get
 
     Assert.AreEqual(expected, actual)
@@ -50,5 +50,14 @@ let ``lambdaToJs - function declaration`` () =
 let ``lambdaToJs - print statement`` () =
     let expected = "var print = console.log.bind(console);\nprint('hello');"
     let actual = lambdaToJs ["""print "hello" """] |> Option.get
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``lambdaToJs - expression list`` () =
+    (* I am not sure why there are two ;; *)
+    let expected = "var print = console.log.bind(console);\n(function () {\n"
+                    + "    var f = function f(x) {\n        return x;\n    };;\n    return f('hello');\n}());"
+    let actual = lambdaToJs ["""< λ f x . x >; f "hello" """] |> Option.get
 
     Assert.AreEqual(expected, actual)

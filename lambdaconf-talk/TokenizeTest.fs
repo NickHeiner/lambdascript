@@ -39,3 +39,10 @@ let ``tokenize - sample.lambda`` () =
         "str"; "["; "/^.(.*)./"; "]"; ">"]
 
     Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``tokenize - expression list`` () =
+    let actual = tokenize ["""λ f x . x; f "hello" """]
+    let expected = ["λ"; "f"; "x"; "."; "x"; ";"; "f"; "\"hello\""]
+
+    Assert.AreEqual(expected, actual)

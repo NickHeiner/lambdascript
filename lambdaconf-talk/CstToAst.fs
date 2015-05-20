@@ -40,6 +40,7 @@ and Ast =
     | StringReLookup of StringLookupInfo
     | Lit of string
     | Ident of string
+    | ExpressionList of (Ast * Ast)
 
     (* This is just to avoid writing "|> Some" all over the place *)
     | Unknown
@@ -56,6 +57,8 @@ let cstToAst (astOpt : ParseTree option) : Ast option =
             
             | Expression [Leaf OpenAngleBracket; Expression _ as expr; Leaf CloseAngleBracket] -> cstToAstRec expr
             | Expression (hd::tl) when List.isEmpty tl -> cstToAstRec hd
+            | Expression [Expression _ as expr; Leaf ExpressionSep; Expression _ as expr'] -> 
+                ExpressionList (cstToAstRec expr, cstToAstRec expr')
 
             | FuncDeclaration 
                 [

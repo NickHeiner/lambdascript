@@ -283,3 +283,25 @@ let ``bottomUpParse - string lookup`` () =
         ]
 
     Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - expression list`` () =
+    let expected = 
+        Expression [
+            Expression [
+                Leaf (Identifier "x")
+            ]
+            Leaf ExpressionSep
+            Expression [
+                Leaf (Identifier "y")
+            ]
+        ]
+        |> Some
+    let actual = 
+        bottomUpParse [
+            Identifier "x"
+            ExpressionSep
+            Identifier "y"
+        ]
+
+    Assert.AreEqual(expected, actual)

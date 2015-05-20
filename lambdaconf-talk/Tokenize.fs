@@ -3,7 +3,7 @@
 open System.Text.RegularExpressions
 
 let tokenize lines =
-    let tokenRegex = Regex @" |(\[|\]|\<|\>)"
+    let tokenRegex = Regex @" |(\[|\]|\<|\>|;)"
     lines
     |> List.map tokenRegex.Split
     |> List.map Array.toList

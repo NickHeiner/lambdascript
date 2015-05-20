@@ -79,3 +79,8 @@ let ``lex - Or`` () =
 [<Test>]
 let ``lex - RegexLiteral`` () =
     Assert.AreEqual([RegexLiteral ".*"], lex ["/.*/"])
+
+[<Test>]
+let ``lex - expression list`` () =
+    let actual = lex ["x"; ";"]
+    Assert.AreEqual([Identifier "x"; ExpressionSep], actual)
