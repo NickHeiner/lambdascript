@@ -13,7 +13,7 @@ let getMatchingRule = function
     | [StringLookup _] as stringLookup -> Some (Expression stringLookup)
     | [Boolean _] as boolean -> Some (Expression boolean)
     | [Leaf OpenAngleBracket; Expression _; Leaf CloseAngleBracket] as children -> Some (Expression children)
-    (* | [Expression _; Leaf ExpressionSep; Expression _] as exprList -> Some (Expression exprList) *)
+    | [Expression _; Leaf ExpressionSep; Expression _] as exprList -> Some (Expression exprList)
 
     (* Functions *)
     | [Leaf Lambda; Leaf (FuncName _); Leaf (ArgName _); Leaf FuncDot; Expression _] as children -> 
