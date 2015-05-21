@@ -10,35 +10,35 @@ open ReadFile
 
 [<Test>]
 let ``lambdaToJs - function invocation`` () =
-    let expected = "var print = console.log.bind(console);\nprint(isPalindrome('racecar'));"
+    let expected = "'use strict';\nvar print = console.log.bind(console);\nprint(isPalindrome('racecar'));"
     let actual = lambdaToJs ["""print < isPalindrome "racecar" > """] |> Option.get
 
     Assert.AreEqual(expected, actual)
 
 [<Test>]
 let ``lambdaToJs - string lookup`` () =
-    let expected = "var print = console.log.bind(console);\nstr.match('ab(.)d')[1];"
+    let expected = "'use strict';\nvar print = console.log.bind(console);\nstr.match('ab(.)d')[1];"
     let actual = lambdaToJs ["str[/ab(.)d/]"] |> Option.get
 
     Assert.AreEqual(expected, actual)
     
 [<Test>]
 let ``lambdaToJs - nested bool`` () =
-    let expected = "var print = console.log.bind(console);\nfoo || bar && baz;"
+    let expected = "'use strict';\nvar print = console.log.bind(console);\nfoo || bar && baz;"
     let actual = lambdaToJs ["foo or < bar and baz >"] |> Option.get
 
     Assert.AreEqual(expected, actual)
     
 [<Test>]
 let ``lambdaToJs - nested bool with or`` () =
-    let expected = "var print = console.log.bind(console);\n(foo || bar) && baz;"
+    let expected = "'use strict';\nvar print = console.log.bind(console);\n(foo || bar) && baz;"
     let actual = lambdaToJs ["< foo or bar > and baz"] |> Option.get
 
     Assert.AreEqual(expected, actual)
     
 [<Test>]
 let ``lambdaToJs - function declaration`` () =
-    let expected = "var print = console.log.bind(console);\nvar f = function f(x) {\n    return 'retVal';\n};"
+    let expected = "'use strict';\nvar print = console.log.bind(console);\nvar f = function f(x) {\n    return 'retVal';\n};"
     let actual = lambdaToJs ["""λ f x . "retVal" """] |> Option.get
 
     Assert.AreEqual(expected, actual)
@@ -49,7 +49,7 @@ let ``lambdaToJs - function declaration`` () =
 
 [<Test>]
 let ``lambdaToJs - print statement`` () =
-    let expected = "var print = console.log.bind(console);\nprint('hello');"
+    let expected = "'use strict';\nvar print = console.log.bind(console);\nprint('hello');"
     let actual = lambdaToJs ["""print "hello" """] |> Option.get
 
     Assert.AreEqual(expected, actual)
@@ -57,7 +57,7 @@ let ``lambdaToJs - print statement`` () =
 [<Test>]
 let ``lambdaToJs - expression list`` () =
     (* I am not sure why there are two ;; *)
-    let expected = "var print = console.log.bind(console);\n(function () {\n"
+    let expected = "'use strict';\nvar print = console.log.bind(console);\n(function () {\n"
                     + "    var f = function f(x) {\n        return x;\n    };;\n    return f('hello');\n}());"
     let actual = lambdaToJs ["""< λ f x . x >; f "hello" """] |> Option.get
 
@@ -65,7 +65,7 @@ let ``lambdaToJs - expression list`` () =
 
 [<Test>]
 let ``lambdaToJs - sample`` () =
-    let expected = "var print = console.log.bind(console);\nvar isPalindrome = function isPalindrome(str) {\n    return str === ('' || function () {\n        str.match('^(.)')[1] === (str.match('.*(.)$')[1] && isPalindrome(str.match('^.(.*).')[1]));\n        return function () {\n            print(isPalindrome('racecar'));\n            return print(isPalindrome('not-a-palindrome'));\n        }();\n    }());\n};"
+    let expected = "'use strict';\nvar print = console.log.bind(console);\nvar isPalindrome = function isPalindrome(str) {\n    return str === ('' || function () {\n        str.match('^(.)')[1] === (str.match('.*(.)$')[1] && isPalindrome(str.match('^.(.*).')[1]));\n        return function () {\n            print(isPalindrome('racecar'));\n            return print(isPalindrome('not-a-palindrome'));\n        }();\n    }());\n};"
     let actual = "..\..\sample.lambda"
                     |> GetFileContents
                     |> lambdaToJs
