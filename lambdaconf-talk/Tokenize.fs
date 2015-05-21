@@ -5,7 +5,7 @@ open Util
 
 let tokenize lines =
     logStep "tokenizing"
-    let tokenRegex = Regex @" |(\[|\]|\<|\>|;)"
+    let tokenRegex = Regex @"\s+|(\[|\]|\<|\>|;)"
     lines
     |> List.map tokenRegex.Split
     |> List.map Array.toList
