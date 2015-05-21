@@ -2,6 +2,7 @@
 
 open NUnit.Framework
 open LambdaToJs
+open ReadFile
 
 (* Instead of js string comparison, it would be nice to compare ASTs so we don't worry about formatting. 
    Additionally, it would be nice to actually test the js that was output.
@@ -64,18 +65,10 @@ let ``lambdaToJs - expression list`` () =
 
 [<Test>]
 let ``lambdaToJs - sample`` () =
-    let input = 
-        ["λ isPalindrome str ."
-         "str is \"\" or <"
-         "str[/^(.)/] is str[/.*(.)$/]"
-         " and isPalindrome str[/^.(.*)./]"
-         ">;"
-         ""
-         "< print <isPalindrome \"racecar\"> >;"
-         "print <isPalindrome \"not-a-palindrome\">"
-       ]
-
     let expected = "var print = console.log.bind(console);\nvar isPalindrome = function isPalindrome(str) {\n    return str === ('' || function () {\n        str.match('^(.)')[1] === (str.match('.*(.)$')[1] && isPalindrome(str.match('^.(.*).')[1]));\n        return function () {\n            print(isPalindrome('racecar'));\n            return print(isPalindrome('not-a-palindrome'));\n        }();\n    }());\n};"
-    let actual = lambdaToJs input |> Option.get
+    let actual = "..\..\sample.lambda"
+                    |> GetFileContents
+                    |> lambdaToJs
+                    |> Option.get
 
     Assert.AreEqual(expected, actual)

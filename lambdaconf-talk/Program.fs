@@ -28,10 +28,10 @@ Compilation complete:
 
         logStep "Running generated js"
 
-        let startInfo = new ProcessStartInfo()
-        startInfo.CreateNoWindow = true |> ignore
-        ignore (startInfo.FileName = "node")
-        startInfo.Arguments = sprintf "-e \"%s\"" js |> ignore
+        let startInfo = new ProcessStartInfo("node", sprintf "-e \"%s\"" js)
+        startInfo.RedirectStandardOutput <- true
+        startInfo.UseShellExecute <- false
+        startInfo.CreateNoWindow <- true
         let nodeProc = Process.Start(startInfo)
         nodeProc.WaitForExit()
 
