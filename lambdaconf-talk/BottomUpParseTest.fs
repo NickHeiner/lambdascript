@@ -363,8 +363,79 @@ let ``bottomUpParse - sample`` () =
         |> bottomUpParse
         |> Option.get
 
-    let expected = Expression []
-
-    printfn "actual\n\n %A" actual
+    let expected = 
+        Expression
+          [Expression
+             [Leaf OpenAngleBracket;
+              Expression
+                [FuncDeclaration
+                   [Leaf Lambda; Leaf (FuncName "isPalindrome"); Leaf (ArgName "str");
+                    Leaf FuncDot;
+                    Expression
+                      [Boolean
+                         [Expression
+                            [Leaf OpenAngleBracket;
+                             Expression
+                               [Boolean
+                                  [Expression [Leaf (Identifier "str")]; Leaf Equality;
+                                   Expression [Leaf (Literal "")]]];
+                             Leaf CloseAngleBracket]; Leaf Or;
+                          Expression
+                            [Leaf OpenAngleBracket;
+                             Expression
+                               [Boolean
+                                  [Expression
+                                     [Leaf OpenAngleBracket;
+                                      Expression
+                                        [Boolean
+                                           [Expression
+                                              [StringLookup
+                                                 [Expression [Leaf (Identifier "str")];
+                                                  Leaf OpenSquareBracket;
+                                                  Leaf (RegexLiteral "^(.)");
+                                                  Leaf CloseSquareBracket]];
+                                            Leaf Equality;
+                                            Expression
+                                              [StringLookup
+                                                 [Expression [Leaf (Identifier "str")];
+                                                  Leaf OpenSquareBracket;
+                                                  Leaf (RegexLiteral ".*(.)$");
+                                                  Leaf CloseSquareBracket]]]];
+                                      Leaf CloseAngleBracket]; Leaf And;
+                                   Expression
+                                     [FuncInvocation
+                                        [Expression [Leaf (Identifier "isPalindrome")];
+                                         Expression
+                                           [StringLookup
+                                              [Expression [Leaf (Identifier "str")];
+                                               Leaf OpenSquareBracket;
+                                               Leaf (RegexLiteral "^.(.*).");
+                                               Leaf CloseSquareBracket]]]]]];
+                             Leaf CloseAngleBracket]]]]]; Leaf CloseAngleBracket];
+           Leaf ExpressionSep;
+           Expression
+             [Expression
+                [Leaf OpenAngleBracket;
+                 Expression
+                   [FuncInvocation
+                      [Expression [Leaf (Identifier "print")];
+                       Expression
+                         [Leaf OpenAngleBracket;
+                          Expression
+                            [FuncInvocation
+                               [Expression [Leaf (Identifier "isPalindrome")];
+                                Expression [Leaf (Literal "racecar")]]];
+                          Leaf CloseAngleBracket]]]; Leaf CloseAngleBracket];
+              Leaf ExpressionSep;
+              Expression
+                [FuncInvocation
+                   [Expression [Leaf (Identifier "print")];
+                    Expression
+                      [Leaf OpenAngleBracket;
+                       Expression
+                         [FuncInvocation
+                            [Expression [Leaf (Identifier "isPalindrome")];
+                             Expression [Leaf (Literal "not-a-palindrome")]]];
+                       Leaf CloseAngleBracket]]]]]
 
     Assert.AreEqual(expected, actual)
