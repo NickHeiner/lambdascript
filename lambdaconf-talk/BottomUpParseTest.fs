@@ -1,9 +1,12 @@
 ﻿module BottomUpParseTest
 
 open Lex
+open ReLex
 open Grammar
 open BottomUpParse
 open NUnit.Framework
+open ReadFile
+open Tokenize
 
 [<Test>]
 let ``bottomUpParse - function declaration`` () = 
@@ -303,5 +306,65 @@ let ``bottomUpParse - expression list`` () =
             ExpressionSep
             Identifier "y"
         ]
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - function and invocation`` () =
+    let expected = 
+        Expression [
+            Expression [
+                Leaf OpenAngleBracket
+                Expression [
+                    FuncDeclaration [
+                        Leaf Lambda
+                        Leaf <| FuncName "f"
+                        Leaf <| ArgName "x"
+                        Leaf FuncDot
+                        Expression [Leaf <| Literal "return value"]
+                    ]
+                ]
+                Leaf CloseAngleBracket
+            ]
+            Leaf ExpressionSep
+            Expression [
+                FuncInvocation [
+                    Expression [Leaf <| Identifier "print"]
+                    Expression [Leaf <| Literal "hello world"]
+                ]
+            ]    
+         ]
+
+    let actual = 
+        bottomUpParse [
+            OpenAngleBracket
+            Lambda
+            FuncName "f"
+            ArgName "x"
+            FuncDot
+            Literal "return value"
+            CloseAngleBracket
+            ExpressionSep
+            Identifier "print"
+            Literal "hello world"
+        ]
+        |> Option.get
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - sample`` () =
+    let actual = 
+        "..\..\sample.lambda"
+        |> GetFileContents
+        |> tokenize
+        |> lex
+        |> reLex
+        |> bottomUpParse
+        |> Option.get
+
+    let expected = Expression []
+
+    printfn "actual\n\n %A" actual
 
     Assert.AreEqual(expected, actual)
