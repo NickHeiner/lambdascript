@@ -34,10 +34,10 @@ let ``tokenize - sample.lambda`` () =
                  |> GetFileContents
                  |> tokenize
     
-    let expected = ["λ"; "isPalindrome"; "str"; "."; "str"; "is"; "\"\""; "or"; "<";
-        "str"; "["; "/^(.)/"; "]"; "is"; "str"; "["; "/.*(.)$/"; "]"; "and"; "isPalindrome";
-        "str"; "["; "/^.(.*)./"; "]"; ">"; ";"; "<"; "print"; "<"; "isPalindrome"; "\"racecar\""; ">"; ">"; ";";
-        "print"; "<"; "isPalindrome"; "\"not-a-palindrome\""; ">"]
+    let expected = ["<"; "λ"; "isPalindrome"; "str"; "."; "<"; "str"; "is"; "\"\""; ">"; "or"; "<";
+        "<"; "str"; "["; "/^(.)/"; "]"; "is"; "str"; "["; "/.*(.)$/"; "]"; ">"; "and"; "isPalindrome";
+        "str"; "["; "/^.(.*)./"; "]"; ">"; ">"; ";"; "<"; "print"; "<"; "isPalindrome"; 
+        "\"racecar\""; ">"; ">"; ";"; "print"; "<"; "isPalindrome"; "\"not-a-palindrome\""; ">"]
 
     Assert.AreEqual(expected, actual)
 
