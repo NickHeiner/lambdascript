@@ -43,22 +43,8 @@ let astToJsAst astOpt =
                 callExpr callee (Some arguments)
 
             | StringReLookup strLookup -> 
-
-                (* Not gonna lie this spacing is a bummer - am I doing it wrong? ha. *)
-                let regexArg = new JObject([
-                                            typeProp "Literal"
-                                            new JProperty("value", strLookup.regex)
-                                            new JProperty("regex", new JObject([
-                                                                                    new JProperty("pattern", sprintf "/%s/" strLookup.regex)
-                                                                                    new JProperty("flags", "")
-                                                                                    ]))
-                                        ])
-                let arguments = 
-                    new JArray([
-                                    astToJsAstRec strLookup.lookupSource
-                                    regexArg
-                                ])
-
+                let regexArg = new JObject([typeProp "Literal"; new JProperty("value", strLookup.regex)])
+                let arguments = new JArray([astToJsAstRec strLookup.lookupSource; regexArg])
                 new JObject([
                                 typeProp "CallExpression"
                                 new JProperty("callee", identObj "stringLookup")
