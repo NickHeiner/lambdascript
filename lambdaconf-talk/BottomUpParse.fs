@@ -39,6 +39,7 @@ let stackPop list = List.head list, List.tail list
 
 let bottomUpParse lexSymbols = 
     let inputStack = lexSymbols |> List.map Leaf |> List.rev
+    logStep "parsing CST"
     log "parsing" inputStack
     (* Keep popping from the stack until we find a handle. *)
     let tryFindHandle parseStack =

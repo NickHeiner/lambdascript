@@ -1,6 +1,7 @@
 ﻿module Lex
 
 open System.Text.RegularExpressions
+open Util
 
 type LexSymbol = 
     | Lambda 
@@ -22,6 +23,7 @@ type LexSymbol =
     | RegexLiteral of string
 
 let lex = 
+    logStep "lexing"
     // From http://fsharpforfunandprofit.com/posts/convenience-active-patterns/
     let (|FirstRegexGroup|_|) pattern input =
        let m = Regex.Match(input,pattern) 

@@ -4,10 +4,13 @@ open Newtonsoft.Json
 open Newtonsoft.Json.Linq
 
 open CstToAst
+open Util
 
 exception JsAstGenerationError of string
 
-let (astToJsAst : Ast option -> string option) = function
+let astToJsAst astOpt = 
+    logStep "transforming lambda script AST to js AST"
+    match astOpt with
     | None -> None
     | Some ast -> 
         let typeProp (value : string) = new JProperty("type", value)
@@ -40,34 +43,13 @@ let (astToJsAst : Ast option -> string option) = function
                 callExpr callee (Some arguments)
 
             | StringReLookup strLookup -> 
-                let memberExpression (obj : JObject) (property : JObject) (computed : bool) =
-                    new JObject([
-                                    typeProp "MemberExpression"
-                                    new JProperty("computed", computed)
-                                    new JProperty("object", obj)
-                                    new JProperty("property", property)
-                                ])
-
-                let regexMatch =
-                    let callee = 
-                        let propertyObj = new JObject([typeProp "Identifier"; new JProperty("name", "match")])
-                        let strToLookUp = astToJsAstRec strLookup.lookupSource
-                        memberExpression strToLookUp propertyObj false
-
-                    (* Not gonna lie this spacing is a bummer. *)
-                    let args = new JObject([
-                                                typeProp "Literal"
-                                                new JProperty("value", strLookup.regex)
-                                                new JProperty("regex", new JObject([
-                                                                                     new JProperty("pattern", sprintf "/%s/" strLookup.regex)
-                                                                                     new JProperty("flags", "")
-                                                                                     ]))
-                                            ])
-                
-                    callExpr callee (Some args)
-
-                let propertyObj = new JObject([typeProp "Literal"; new JProperty("value", 1)])
-                memberExpression regexMatch propertyObj true
+                let regexArg = new JObject([typeProp "Literal"; new JProperty("value", strLookup.regex)])
+                let arguments = new JArray([astToJsAstRec strLookup.lookupSource; regexArg])
+                new JObject([
+                                typeProp "CallExpression"
+                                new JProperty("callee", identObj "stringLookup")
+                                new JProperty("arguments", arguments)
+                            ])
 
             | Bool boolExpr -> 
                 let jsOperator = match boolExpr.operator with

@@ -153,37 +153,21 @@ let ``astToJsAst - string lookup`` () =
                 {
                     "type": "ExpressionStatement",
                     "expression": {
-                        "type": "MemberExpression",
-                        "computed": true,
-                        "object": {
-                            "type": "CallExpression",
-                            "callee": {
-                                "type": "MemberExpression",
-                                "computed": false,
-                                "object": {
-                                    "type": "Identifier",
-                                    "name": "str"
-                                },
-                                "property": {
-                                    "type": "Identifier",
-                                    "name": "match"
-                                }
-                            },
-                            "arguments": [
-                                {
-                                    "type": "Literal",
-                                    "value": "/(fe?)/",
-                                    "regex": {
-                                        "pattern": "(fe?)",
-                                        "flags": ""
-                                    }
-                                }
-                            ]
+                        "type": "CallExpression",
+                        "callee": {
+                            "type": "Identifier",
+                            "name": "stringLookup"
                         },
-                        "property": {
-                            "type": "Literal",
-                            "value": 1
-                        }
+                        "arguments": [
+                            {
+                                "type": "Identifier",
+                                "name": "str"
+                            },
+                            {
+                                "type": "Literal",
+                                "value": "(fe?)"
+                            }
+                        ]
                     }
                 }
             ]

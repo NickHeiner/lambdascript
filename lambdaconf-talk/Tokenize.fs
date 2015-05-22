@@ -1,9 +1,11 @@
 ﻿module Tokenize
 
 open System.Text.RegularExpressions
+open Util
 
 let tokenize lines =
-    let tokenRegex = Regex @" |(\[|\]|\<|\>|;)"
+    logStep "tokenizing"
+    let tokenRegex = Regex @"\s+|(\[|\]|\<|\>|;)"
     lines
     |> List.map tokenRegex.Split
     |> List.map Array.toList

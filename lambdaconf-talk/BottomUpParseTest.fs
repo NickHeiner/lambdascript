@@ -1,9 +1,12 @@
 ﻿module BottomUpParseTest
 
 open Lex
+open ReLex
 open Grammar
 open BottomUpParse
 open NUnit.Framework
+open ReadFile
+open Tokenize
 
 [<Test>]
 let ``bottomUpParse - function declaration`` () = 
@@ -303,5 +306,136 @@ let ``bottomUpParse - expression list`` () =
             ExpressionSep
             Identifier "y"
         ]
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - function and invocation`` () =
+    let expected = 
+        Expression [
+            Expression [
+                Leaf OpenAngleBracket
+                Expression [
+                    FuncDeclaration [
+                        Leaf Lambda
+                        Leaf <| FuncName "f"
+                        Leaf <| ArgName "x"
+                        Leaf FuncDot
+                        Expression [Leaf <| Literal "return value"]
+                    ]
+                ]
+                Leaf CloseAngleBracket
+            ]
+            Leaf ExpressionSep
+            Expression [
+                FuncInvocation [
+                    Expression [Leaf <| Identifier "print"]
+                    Expression [Leaf <| Literal "hello world"]
+                ]
+            ]    
+         ]
+
+    let actual = 
+        bottomUpParse [
+            OpenAngleBracket
+            Lambda
+            FuncName "f"
+            ArgName "x"
+            FuncDot
+            Literal "return value"
+            CloseAngleBracket
+            ExpressionSep
+            Identifier "print"
+            Literal "hello world"
+        ]
+        |> Option.get
+
+    Assert.AreEqual(expected, actual)
+
+[<Test>]
+let ``bottomUpParse - sample`` () =
+    let actual = 
+        "..\..\sample.lambda"
+        |> GetFileContents
+        |> tokenize
+        |> lex
+        |> reLex
+        |> bottomUpParse
+        |> Option.get
+
+    let expected = 
+        Expression
+          [Expression
+             [Leaf OpenAngleBracket;
+              Expression
+                [FuncDeclaration
+                   [Leaf Lambda; Leaf (FuncName "isPalindrome"); Leaf (ArgName "str");
+                    Leaf FuncDot;
+                    Expression
+                      [Boolean
+                         [Expression
+                            [Leaf OpenAngleBracket;
+                             Expression
+                               [Boolean
+                                  [Expression [Leaf (Identifier "str")]; Leaf Equality;
+                                   Expression [Leaf (Literal "")]]];
+                             Leaf CloseAngleBracket]; Leaf Or;
+                          Expression
+                            [Leaf OpenAngleBracket;
+                             Expression
+                               [Boolean
+                                  [Expression
+                                     [Leaf OpenAngleBracket;
+                                      Expression
+                                        [Boolean
+                                           [Expression
+                                              [StringLookup
+                                                 [Expression [Leaf (Identifier "str")];
+                                                  Leaf OpenSquareBracket;
+                                                  Leaf (RegexLiteral "^(.)");
+                                                  Leaf CloseSquareBracket]];
+                                            Leaf Equality;
+                                            Expression
+                                              [StringLookup
+                                                 [Expression [Leaf (Identifier "str")];
+                                                  Leaf OpenSquareBracket;
+                                                  Leaf (RegexLiteral ".*(.)$");
+                                                  Leaf CloseSquareBracket]]]];
+                                      Leaf CloseAngleBracket]; Leaf And;
+                                   Expression
+                                     [FuncInvocation
+                                        [Expression [Leaf (Identifier "isPalindrome")];
+                                         Expression
+                                           [StringLookup
+                                              [Expression [Leaf (Identifier "str")];
+                                               Leaf OpenSquareBracket;
+                                               Leaf (RegexLiteral "^.(.*).");
+                                               Leaf CloseSquareBracket]]]]]];
+                             Leaf CloseAngleBracket]]]]]; Leaf CloseAngleBracket];
+           Leaf ExpressionSep;
+           Expression
+             [Expression
+                [Leaf OpenAngleBracket;
+                 Expression
+                   [FuncInvocation
+                      [Expression [Leaf (Identifier "print")];
+                       Expression
+                         [Leaf OpenAngleBracket;
+                          Expression
+                            [FuncInvocation
+                               [Expression [Leaf (Identifier "isPalindrome")];
+                                Expression [Leaf (Literal "racecar")]]];
+                          Leaf CloseAngleBracket]]]; Leaf CloseAngleBracket];
+              Leaf ExpressionSep;
+              Expression
+                [FuncInvocation
+                   [Expression [Leaf (Identifier "print")];
+                    Expression
+                      [Leaf OpenAngleBracket;
+                       Expression
+                         [FuncInvocation
+                            [Expression [Leaf (Identifier "isPalindrome")];
+                             Expression [Leaf (Literal "not-a-palindrome")]]];
+                       Leaf CloseAngleBracket]]]]]
 
     Assert.AreEqual(expected, actual)

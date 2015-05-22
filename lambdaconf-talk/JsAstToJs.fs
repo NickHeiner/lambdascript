@@ -1,8 +1,11 @@
 ﻿module JsAstToJs
 
 open EdgeJs
+open Util
 
-let (jsAstToJs : string option -> string option) = function
+let jsAstToJs jsAstOpt = 
+    logStep "transforming js AST to js"
+    match jsAstOpt with
     | None -> None
     | Some json ->
         let edgeFunc = Edge.Func @"
