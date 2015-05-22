@@ -16,6 +16,5 @@ function stringLookup(str, regex) {
     return '';
 }
 
-var print = console.log.bind(console);
-                    """ + code |> Some
+var print = console.log.bind(console);""" + code |> Some
     | None -> None
