@@ -1,0 +1,9 @@
+{
+  "name": "lsc",
+  "version": "1.0.0-0",
+  "description": "An io.js compatible implementation of the lambdascript compiler",
+  "repository": "https://github.com/NickHeiner/lambdaconf-talk/",
+  "scripts": {
+    "test": "echo \"no tests yet \""
+  }
+}
