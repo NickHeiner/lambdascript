@@ -6,9 +6,12 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "db475daba23206e8cd0ac04d47f0764f4a62f7da"
+      "commit": "f0aa5507070dc74859b636bd2dac37f3e8cab8d1"
     },
     "tape/tape.d.ts": {
+      "commit": "db475daba23206e8cd0ac04d47f0764f4a62f7da"
+    },
+    "q/Q.d.ts": {
       "commit": "db475daba23206e8cd0ac04d47f0764f4a62f7da"
     }
   }

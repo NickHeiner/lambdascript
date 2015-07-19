@@ -1,3 +1,5 @@
+/// <reference path="../../typings/tsd.d.ts" />
+
 'use strict';
 
 const test = require('tape'),
@@ -13,7 +15,7 @@ test('lambdascript compiler in js', function(t) {
 
        return q.nfcall(tmp.file.bind(tmp))
            .then(function(jsOutputFilePath) {
-               return lsc.compile(testFilePath, jsOutputFilePath)
+               return lsc(testFilePath, jsOutputFilePath)
                    .then(function() {
                        return q.nfcall(child_process.spawn.bind(child_process), 'node', jsOutputFilePath);
                    });
