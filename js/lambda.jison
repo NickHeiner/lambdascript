@@ -1,19 +1,28 @@
-/* Jison-formatted lex and parse rules for LambdaScript */
+/* description: Parses end executes mathematical expressions. */
 
-%token OPEN_ANGLE_BRACKET CLOSE_ANGLE_BRACKET IS STRING_LITERAL IDENTIFIER
+%token OPEN_ANGLE_BRACKET
 
+/* lexical grammar */
 %lex
+
 %%
-
-\s+         {/* skip whitespace */}
-<           { return OPEN_ANGLE_BRACKET;}
->           { return OPEN_ANGLE_BRACKET;}
-
-/* This needs to be made more sophisticated */
-".*"        { return STRING_LITERAL;}
-
-is          { return IS;}
-
-.*          { return IDENTIFIER;}
+\s+                   /* skip whitespace */
+"<"                   {return OPEN_ANGLE_BRACKET;}
 
 /lex
+
+/* operator associations and precedence */
+/* TODO */
+
+%start expressions
+
+%% /* language grammar */
+
+expressions
+    : e
+        {return $1;}
+    ;
+
+e
+    : OPEN_ANGLE_BRACKET
+    ;

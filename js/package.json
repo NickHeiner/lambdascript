@@ -17,5 +17,15 @@
     "tsc": "^1.20150623.0",
     "tsd": "^0.6.3",
     "tslint": "^2.1.1"
+  },
+  "dependencies": {
+    "chalk": "^1.1.0",
+    "flat": "^1.6.0",
+    "lodash": "^3.10.0",
+    "minimist": "^1.1.1",
+    "nconf": "^0.7.1",
+    "strip-ansi": "^3.0.0",
+    "through2": "^2.0.0",
+    "traverse": "^0.6.6"
   }
 }

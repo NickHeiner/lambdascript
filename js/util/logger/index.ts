@@ -1,6 +1,6 @@
 'use strict';
 
-import createStdoutStream = require('./lib/create-stdout-stream');
+import createStdoutStream = require('./create-stdout-stream');
 import config = require('../config');
 
 const bunyan = require('bunyan'),
