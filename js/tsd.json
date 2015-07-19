@@ -7,6 +7,9 @@
   "installed": {
     "node/node.d.ts": {
       "commit": "db475daba23206e8cd0ac04d47f0764f4a62f7da"
+    },
+    "tape/tape.d.ts": {
+      "commit": "db475daba23206e8cd0ac04d47f0764f4a62f7da"
     }
   }
 }
