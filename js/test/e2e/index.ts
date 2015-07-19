@@ -2,6 +2,8 @@
 
 'use strict';
 
+import logger = require('../../util/logger');
+
 const test = require('tape'),
     path = require('path'),
     tmp = require('tmp'),
@@ -17,18 +19,23 @@ test('lambdascript compiler in js', function(t: any) {
     function runTest(testFileName: string) {
         const testFilePath = path.resolve(__dirname, '..', 'fixtures', testFileName);
 
+        logger.info({testFilePath: testFilePath}, 'Running test file');
+
         return q.nfcall(tmp.file.bind(tmp))
             .then(function(jsOutputFilePath: string) {
-               return lsc(testFilePath, jsOutputFilePath)
-                   .then(function() {
-                       return q.nfcall(child_process.spawn.bind(child_process), 'node', jsOutputFilePath);
-                   });
+                logger.info({jsOutputFilePath: jsOutputFilePath}, 'Compiling to js output');
+                return lsc(testFilePath, jsOutputFilePath)
+                    .then(function() {
+                        logger.info('Spawning node on generated js');
+                        return q.nfcall(child_process.spawn.bind(child_process), 'node', jsOutputFilePath);
+                    });
             }).then(function(stdout: string, stderr: string) {
-               if (stderr) {
+                logger.info({stderr: stderr, stdout: stdout}, 'Nodejs spawn complete');
+                if (stderr) {
                    throw new Error(stderr);
-               }
+                }
 
-               return stdout;
+                return stdout;
             });
     }
 
