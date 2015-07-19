@@ -7,7 +7,11 @@ const test = require('tape'),
     tmp = require('tmp'),
     q = require('q'),
     child_process = require('child_process'),
-    lsc = require('../..');
+
+    // we want to nodejs-import rather than require this because we want to test the compiled js
+    // that would be published, not the js compiled as part of this same test bundle with potentially
+    // different settings.
+    lsc: any = require('../..');
 
 test('lambdascript compiler in js', function(t: any) {
     function runTest(testFileName: string) {
@@ -36,6 +40,6 @@ test('lambdascript compiler in js', function(t: any) {
         t.plan(1);
         runTest('print-boolean.lambda').then(function(stdout: string) {
             stringEqual(t, stdout, 'true', 'boolean is printed correctly to standard out');
-        });
+        }).then(t.error);
     });
 });

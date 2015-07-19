@@ -3,7 +3,7 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "preserveConstEnums": true,
-    "out": "index.js"
+    "out": "test/e2e/index.js"
   },
   "files": [
     "index.ts"
