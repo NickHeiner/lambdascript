@@ -4,7 +4,8 @@
   "description": "An io.js compatible implementation of the lambdascript compiler",
   "repository": "https://github.com/NickHeiner/lambdaconf-talk/",
   "scripts": {
-    "test": "tslint -c tslint.json -f test/**/*.ts *.ts lib/**/*.ts"
+    "test": "tslint -c tslint.json -f test/**/*.ts *.ts lib/**/*.ts",
+    "prepublish": "tsd reinstall"
   },
   "devDependencies": {
     "jison": "^0.4.15",
