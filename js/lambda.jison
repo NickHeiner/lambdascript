@@ -1,13 +1,15 @@
-/* description: Parses end executes mathematical expressions. */
+/* description: Compiles LambdaScript. */
 
-%token OPEN_ANGLE_BRACKET
+%token IDENTIFIER STRING_LITERAL
 
 /* lexical grammar */
 %lex
 
 %%
 \s+                   /* skip whitespace */
-"<"                   {return OPEN_ANGLE_BRACKET;}
+\".*\"                {return STRING_LITERAL;}
+
+.*                    { return IDENTIFIER; }
 
 /lex
 
@@ -24,5 +26,5 @@ expressions
     ;
 
 e
-    : OPEN_ANGLE_BRACKET
+    : IDENTIFIER STRING_LITERAL
     ;
