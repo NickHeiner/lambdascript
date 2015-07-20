@@ -3,7 +3,8 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "preserveConstEnums": true,
-    "out": "index.js"
+    "out": "index.js",
+    "noEmitOnError": true
   },
   "files": [
     "index.ts"
