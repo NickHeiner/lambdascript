@@ -2,7 +2,13 @@
 
 'use strict';
 
-import logger = require('../../util/logger/index');
+// import logger = require('../../util/logger');
+
+const logger = {
+    info: function(data: any, message?: any) {
+        console.log('#', JSON.stringify(data), message);
+    }
+};
 
 const test = require('tape'),
     path = require('path'),
@@ -22,8 +28,8 @@ test('lambdascript compiler in js', function(t: any) {
         logger.info({testFilePath: testFilePath}, 'Running test file');
 
         return q.nfcall(tmp.file.bind(tmp))
-            .then(function(jsOutputFilePath: string) {
-                logger.info({jsOutputFilePath: jsOutputFilePath}, 'Compiling to js output');
+            .spread(function(jsOutputFilePath: string) {
+                logger.info({jsOutputFilePath: jsOutputFilePath, lsc: lsc}, 'Compiling to js output');
                 return lsc(testFilePath, jsOutputFilePath)
                     .then(function() {
                         logger.info('Spawning node on generated js');
@@ -47,6 +53,9 @@ test('lambdascript compiler in js', function(t: any) {
         t.plan(1);
         runTest('print-string.lambda').then(function(stdout: string) {
             stringEqual(t, stdout, 'hello-world', 'string is printed correctly to standard out');
-        }).then(t.error);
+        }).catch(function(err: any) {
+            t.error(err);
+            throw err;
+        });
     });
 });

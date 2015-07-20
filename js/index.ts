@@ -5,8 +5,9 @@
 const q = require('q');
 
 function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
-    console.log('not yet implemented');
+    console.log('# not yet implemented');
     return q();
 }
 
-exports = lsc;
+// Why is this necessary?
+module.exports = lsc;
