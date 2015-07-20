@@ -13,7 +13,7 @@ const test = require('tape'),
     // we want to nodejs-import rather than require this because we want to test the compiled js
     // that would be published, not the js compiled as part of this same test bundle with potentially
     // different settings.
-    lsc: any = require('../..');
+    lsc = require('../..');
 
 test('lambdascript compiler in js', function(t: any) {
     function runTest(testFileName: string) {

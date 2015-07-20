@@ -16,6 +16,9 @@
     },
     "lodash/lodash.d.ts": {
       "commit": "db475daba23206e8cd0ac04d47f0764f4a62f7da"
+    },
+    "bunyan/bunyan.d.ts": {
+      "commit": "db475daba23206e8cd0ac04d47f0764f4a62f7da"
     }
   }
 }

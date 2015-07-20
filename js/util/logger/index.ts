@@ -8,25 +8,16 @@ const bunyan = require('bunyan'),
 
 chalk.enabled = true;
 
-export = createLogger(process.stdout);
+const streams = [{
+    name: 'stdout',
+    stream: createStdoutStream(process.stdout, 'short'),
+    level: config('loglevel')
+}];
 
-/**
- * Centralized logging configuration.
- *
- * @param {stream} out - a stream to write log records to.
- * @returns {object} log - an instance of a bunyan logger.
- */
-function createLogger(out: NodeJS.WritableStream) {
-    const streams = [{
-        name: 'stdout',
-        stream: createStdoutStream(out, 'short'),
-        level: config('loglevel')
-    }];
+export = bunyan.createLogger({
+    name: 'lsc',
+    serializers: bunyan.stdSerializers,
+    src: false,
+    streams: streams
+});
 
-    return bunyan.createLogger({
-        name: 'lsc',
-        serializers: bunyan.stdSerializers,
-        src: false,
-        streams: streams
-    });
-}
