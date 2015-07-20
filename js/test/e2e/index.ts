@@ -2,7 +2,7 @@
 
 'use strict';
 
-import logger = require('../../util/logger');
+import logger = require('../../util/logger/index');
 
 const test = require('tape'),
     path = require('path'),

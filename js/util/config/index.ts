@@ -9,8 +9,7 @@ const nconf = require('nconf'),
     ENV_DELIMITER = '__',
     ENV_DELIMITER_REGEX = new RegExp('.+' + ENV_DELIMITER + '.+');
 
-module.exports = createConfig(process.argv);
-module.exports.createConfig = createConfig;
+export = createConfig(process.argv);
 
 /**
  * @description Create configuration
@@ -18,7 +17,7 @@ module.exports.createConfig = createConfig;
  * @param {string[]} argv command-line arguments
  * @returns {object} configuration object
  */
-function createConfig(rawArgv) {
+function createConfig(rawArgv: string[]) {
     const config = new nconf.Provider(),
         parsedArgv = flat.unflatten(minimist(rawArgv), {delimiter: ':'}),
         envWhitelist = _(process.env)
@@ -36,7 +35,7 @@ function createConfig(rawArgv) {
         whitelist: envWhitelist
     });
 
-    return function get(key, defaultValue) {
+    return function get(key: string, defaultValue?: any): any {
         var result = coerceValues(config.get(key));
 
         if (_.isUndefined(result)) {
@@ -47,8 +46,8 @@ function createConfig(rawArgv) {
     };
 }
 
-function coerceValues(configData) {
-    return traverse(configData).forEach(function(value) {
+function coerceValues(configData: any) {
+    return traverse(configData).forEach(function(value: any) {
         if (this.isLeaf && !_.isUndefined(value)) {
             // Allow env vars to define boolean values
             if (value === 'true') {

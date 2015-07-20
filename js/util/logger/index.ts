@@ -1,14 +1,14 @@
 'use strict';
 
 import createStdoutStream = require('./create-stdout-stream');
-import config = require('../config');
+import config = require('../config/index');
 
 const bunyan = require('bunyan'),
     chalk = require('chalk');
 
 chalk.enabled = true;
 
-module.exports = createLogger(process.stdout);
+export = createLogger(process.stdout);
 
 /**
  * Centralized logging configuration.
@@ -16,11 +16,11 @@ module.exports = createLogger(process.stdout);
  * @param {stream} out - a stream to write log records to.
  * @returns {object} log - an instance of a bunyan logger.
  */
-function createLogger(out) {
+function createLogger(out: NodeJS.WritableStream) {
     const streams = [{
         name: 'stdout',
         stream: createStdoutStream(out, 'short'),
-        level: config.get('loglevel')
+        level: config('loglevel')
     }];
 
     return bunyan.createLogger({
