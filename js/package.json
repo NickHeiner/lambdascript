@@ -3,6 +3,9 @@
   "version": "1.0.0-0",
   "description": "An io.js compatible implementation of the lambdascript compiler",
   "repository": "https://github.com/NickHeiner/lambdascript/",
+  "bin": {
+    "lsc": "./bin/lsc.js"
+  },
   "scripts": {
     "pretest": "tslint -c tslint.json -f test/**/*.ts *.ts lib/**/*.ts && jison lambda.jison && tsc -p . && tsc -p test/e2e",
     "test": "tape test/**/*.js | tap-difflet",
