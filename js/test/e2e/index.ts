@@ -27,21 +27,22 @@ test('lambdascript compiler in js', function(t: any) {
 
         logger.info({testFilePath: testFilePath}, 'Running test file');
 
-        return q.nfcall(tmp.file.bind(tmp))
+        return q.nfcall(tmp.file.bind(tmp), {postfix: '.js'})
             .spread(function(jsOutputFilePath: string) {
                 logger.info({jsOutputFilePath: jsOutputFilePath, lsc: lsc}, 'Compiling to js output');
                 return lsc(testFilePath, jsOutputFilePath)
                     .then(function() {
-                        logger.info('Spawning node on generated js');
-                        return q.nfcall(child_process.spawn.bind(child_process), 'node', jsOutputFilePath);
+                        const command = `node ${jsOutputFilePath}`;
+                        logger.info({command: command}, 'Spawning node on generated js');
+                        return q.nfcall(child_process.exec.bind(child_process), command);
                     });
-            }).then(function(stdout: string, stderr: string) {
-                logger.info({stderr: stderr, stdout: stdout}, 'Nodejs spawn complete');
-                if (stderr) {
-                   throw new Error(stderr);
+            }).spread(function(stdout: Buffer, stderr: Buffer) {
+                if (stderr.length) {
+                   throw new Error(stderr.toString());
                 }
 
-                return stdout;
+                logger.info({stdout: stdout.toString()}, 'Nodejs spawn complete');
+                return stdout.toString();
             });
     }
 
