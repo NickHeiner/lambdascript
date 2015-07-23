@@ -19,6 +19,9 @@
     },
     "bunyan/bunyan.d.ts": {
       "commit": "db475daba23206e8cd0ac04d47f0764f4a62f7da"
+    },
+    "estree/estree.d.ts": {
+      "commit": "977da240f263e88215a27cb44f2e31524ca07135"
     }
   }
 }

@@ -1,42 +1,42 @@
-interface ILambdaScriptAst {
-    // This is just a parent type, with no content of its own. Is there a better way to express this?
+type LambdaScriptAst = IFunctionInvocationAstNode
+
+class IFunctionInvocationAstNode {
+    func: LambdaScriptAst;
+    arg: LambdaScriptAst;
 }
 
-interface IFunctionInvocationAstNode extends ILambdaScriptAst {
-    func: ILambdaScriptAst,
-    arg: ILambdaScriptAst
+interface AstToJsAstError extends Error {
+    ast: LambdaScriptAst
 }
 
-function astToJsAst(ast: IFunctionInvocationAstNode) {
+function callExpression(callee: ESTree.Expression|ESTree.Super, args: Array<ESTree.Expression>): ESTree.CallExpression {
     return {
-        "type": "Program",
-        "body": [
-            {
-                "type": "ExpressionStatement",
-                "expression": {
-                    "type": "CallExpression",
-                    "callee": {
-                        "type": "MemberExpression",
-                        "computed": false,
-                        "object": {
-                            "type": "Identifier",
-                            "name": "console"
-                        },
-                        "property": {
-                            "type": "Identifier",
-                            "name": "log"
-                        }
-                    },
-                    "arguments": [
-                        {
-                            "type": "Literal",
-                            "value": "hi",
-                            "raw": "'hi'"
-                        }
-                    ]
-                }
-            }
-        ]
+        type: 'CallExpression',
+        callee: callee,
+        arguments: args
+    };
+}
+
+function astToJsAst(ast: LambdaScriptAst): ESTree.Program {
+    function astToJsAstRec(ast: LambdaScriptAst): ESTree.Statement {
+        if (ast instanceof IFunctionInvocationAstNode) {
+            const exprStatement: ESTree.ExpressionStatement = {
+                type: 'ExpressionStatement',
+                expression: callExpression(astToJsAstRec(ast.func), [astToJsAstRec(ast.arg)])
+            };
+            return exprStatement;
+        } else {
+            let err = <AstToJsAstError>new Error('AST node type not implemented');
+            err.ast = ast;
+            throw err;
+        }
+    }
+    
+    return {
+        type: 'Program',
+        body: [astToJsAstRec(ast)],
+
+        sourceType: 'I am not sure what this value is supposed to be'
     };
 }
 
