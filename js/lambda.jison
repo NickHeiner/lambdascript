@@ -24,5 +24,11 @@ expressions
 
 e
     : 'IDENTIFIER' 'STRING_LITERAL'
-        { return $1 + '(' + $2 + ')'; }
+        {
+            return {
+                type: 'FunctionInvocation',
+                func: $1,
+                arg: $2
+            };
+        }
     ;

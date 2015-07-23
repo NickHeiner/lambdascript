@@ -2,13 +2,19 @@
 
 'use strict';
 
+import astToJsAst = require('./lib/ast-to-js-ast');
+
 const q = require('q'),
     lambda = require('./lambda'),
+    escodegen = require('escodegen'),
     qFs = require('q-io/fs');
 
 function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
     return qFs.read(inputLambdaScriptFile).then(function(lambdaScriptCode: string) {
-        const js = lambda.parser.parse(lambdaScriptCode);
+        const lambdaScriptAst = lambda.parser.parse(lambdaScriptCode),
+            jsAst = astToJsAst(lambdaScriptAst),
+            js = escodegen.generate(jsAst);
+
         return qFs.write(outputJsFile, js);
     });
 }
