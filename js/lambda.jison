@@ -1,15 +1,12 @@
 /* description: Compiles LambdaScript. */
 
-%token IDENTIFIER STRING_LITERAL
-
 /* lexical grammar */
 %lex
 
 %%
-\s+                   /* skip whitespace */
-\".*\"                {return STRING_LITERAL;}
-
-.*                    { return IDENTIFIER; }
+\s+               /* skip whitespace */
+hi                {return 'STRING_LITERAL';}
+print             { return 'IDENTIFIER'; }
 
 /lex
 
@@ -26,5 +23,6 @@ expressions
     ;
 
 e
-    : IDENTIFIER STRING_LITERAL
+    : 'IDENTIFIER' 'STRING_LITERAL'
+        { return $1 + '(' + $2 + ')'; }
     ;
