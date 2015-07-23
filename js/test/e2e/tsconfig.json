@@ -3,7 +3,6 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "preserveConstEnums": true,
-    "out": "test/e2e/index.js",
     "noEmitOnError": true
   },
   "files": [

@@ -2,13 +2,7 @@
 
 'use strict';
 
-// import logger = require('../../util/logger');
-
-const logger = {
-    info: function(data: any, message?: any) {
-        console.log('#', JSON.stringify(data), message);
-    }
-};
+ import logger = require('../../util/logger/index');
 
 const test = require('tape'),
     path = require('path'),
@@ -22,6 +16,8 @@ const test = require('tape'),
     lsc = require('../..');
 
 test('lambdascript compiler in js', function(t: any) {
+    t.equal(process.env.TAP, '1', 'tap env var is set');
+
     function runTest(testFileName: string) {
         const testFilePath = path.resolve(__dirname, '..', 'fixtures', testFileName);
 
