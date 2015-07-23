@@ -3,7 +3,6 @@
 'use strict';
 
 import astToJsAst = require('./lib/ast-to-js-ast');
-import jisonOutputToLambdaScriptAst = require('./lib/jison-output-to-lambda-script-ast');
 
 const q = require('q'),
     lambda = require('./lambda'),
@@ -13,8 +12,7 @@ const q = require('q'),
 function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
     return qFs.read(inputLambdaScriptFile).then(function(lambdaScriptCode: string) {
         const jisonOutput = lambda.parser.parse(lambdaScriptCode),
-            lambdaScriptAst = jisonOutputToLambdaScriptAst(jisonOutput),
-            jsAst = astToJsAst(lambdaScriptAst),
+            jsAst = astToJsAst(jisonOutput),
             js = escodegen.generate(jsAst);
 
         return qFs.write(outputJsFile, js);

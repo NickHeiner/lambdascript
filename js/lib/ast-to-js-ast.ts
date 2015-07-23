@@ -1,4 +1,25 @@
-/// <reference path="./lambda-script-ast.d.ts" />
+interface ILambdaScriptAstNode {
+    // I would like to make this an enum but was not able to fully make it work,
+    // because what we are getting from jison is a string.
+    type: string
+}
+
+interface IFunctionInvocation extends ILambdaScriptAstNode {
+    func: ILambdaScriptAstNode;
+    arg: ILambdaScriptAstNode;
+}
+
+interface ILiteral extends ILambdaScriptAstNode {
+    value: string
+}
+
+interface IIdentifier extends ILambdaScriptAstNode {
+    name: string
+}
+
+interface AstToJsAstError extends Error {
+    ast: ILambdaScriptAstNode
+}
 
 function callExpression(callee: ESTree.Expression|ESTree.Super, args: Array<ESTree.Expression>): ESTree.CallExpression {
     return {
@@ -11,7 +32,7 @@ function callExpression(callee: ESTree.Expression|ESTree.Super, args: Array<ESTr
 function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
     function astToJsAstRec(ast: ILambdaScriptAstNode): ESTree.Statement {
         switch (ast.type) {
-            case NodeType.FunctionInvocation:
+            case 'FunctionInvocation':
                 const funcInvocationAst = <IFunctionInvocation>ast,
                     exprStatement: ESTree.ExpressionStatement = {
                         type: 'ExpressionStatement',
@@ -22,12 +43,12 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
                     };
                 return exprStatement;
 
-            case NodeType.Literal:
+            case 'Literal':
                 const litAst = <ILiteral>ast,
-                    literal: ESTree.Literal = {value: litAst.val, type: 'Literal'};
+                    literal: ESTree.Literal = {value: litAst.value, type: 'Literal'};
                 return literal;
 
-            case NodeType.Identifier:
+            case 'Identifier':
                 const identAst = <IIdentifier>ast,
                     identifier: ESTree.Identifier = {name: identAst.name, type: 'Identifier'};
                 return identifier;

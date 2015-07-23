@@ -5,7 +5,7 @@
 
 %%
 \s+               /* skip whitespace */
-hi                {return 'STRING_LITERAL';}
+hi                {return 'LITERAL';}
 print             { return 'IDENTIFIER'; }
 
 /lex
@@ -23,12 +23,26 @@ expressions
     ;
 
 e
-    : 'IDENTIFIER' 'STRING_LITERAL'
+    : e e
         {
             return {
                 type: 'FunctionInvocation',
                 func: $1,
                 arg: $2
+            };
+        }
+    | 'IDENTIFIER'
+        {
+            return {
+                type: 'Identifier',
+                name: $1
+            };
+        }
+    | 'LITERAL'
+        {
+            return {
+                type: 'Literal',
+                value: $1
             };
         }
     ;
