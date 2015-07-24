@@ -9,13 +9,13 @@
 %%
 \s+               /* skip whitespace */
 
-["]               { console.log('STRING_START', yytext); this.begin('string'); return 'STRING_START'; }
-<string>[\\]       { console.log('begin string escape'); this.begin('string-escape'); }
-<string-escape>["] { yytext = '\\' + yytext; console.log('end string escape', yytext); this.popState(); return 'ESCAPED_QUOTE'; }
-<string>["]       { console.log('STRING_END', yytext); this.popState(); return 'STRING_END'; }
-<string>.         { console.log('string char', yytext); return 'STRING_CHAR'; }
+["]                { this.begin('string'); return 'STRING_START'; }
+<string>[\\]       { this.begin('string-escape'); }
+<string-escape>["] { this.popState(); return 'ESCAPED_QUOTE'; }
+<string>["]        { this.popState(); return 'STRING_END'; }
+<string>.          { return 'STRING_CHAR'; }
 
-print             { return 'IDENTIFIER'; }
+print              { return 'IDENTIFIER'; }
 
 /lex
 
@@ -29,17 +29,14 @@ print             { return 'IDENTIFIER'; }
 string_chars
     : ESCAPED_QUOTE string_chars
         {
-            console.log('escaped quote prepend');
             $$ = [$1].concat($2);
         }
     | STRING_CHAR string_chars
         {
-            console.log('string char prepend');
             $$ = [$1].concat($2);
         }
     | STRING_CHAR
         {
-            console.log('singleton string char');
             $$ = [$1];
         }
     ;
@@ -47,7 +44,6 @@ string_chars
 literal
     : STRING_START string_chars STRING_END
         {
-            console.log('literal match');
             $$ = {
                 type: 'Literal',
                 value: $2.join('')
@@ -55,7 +51,6 @@ literal
         }
     | STRING_START STRING_END
         {
-          console.log('literal match empty string');
           $$ = {
               type: 'Literal',
               value: ''
@@ -66,7 +61,6 @@ literal
 e
     : IDENTIFIER literal
         {
-            console.log('e match');
             $$ = {
                 type: 'FunctionInvocation',
                 func: {
