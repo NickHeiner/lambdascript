@@ -29,6 +29,10 @@ test('lambdascript compiler in js', function(t: any) {
                         const command = `node ${jsOutputFilePath}`;
                         logger.info({command: command}, 'Spawning node on generated js');
                         return q.nfcall(child_process.exec.bind(child_process), command);
+                    })
+                    .fail(function(err: any) {
+                        logger.error(err, 'lsc failed');
+                        throw err;
                     });
             }).spread(function(stdout: Buffer, stderr: Buffer) {
                 if (stderr.length) {
