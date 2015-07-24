@@ -5,7 +5,7 @@
 
 %%
 \s+               /* skip whitespace */
-hello\-world     {return 'LITERAL';}
+\"hello\-world\"     {return 'LITERAL';}
 print             { return 'IDENTIFIER'; }
 
 /lex
@@ -18,19 +18,18 @@ print             { return 'IDENTIFIER'; }
 %% /* language grammar */
 
 e
-    : 'IDENTIFIER' e
+    : 'IDENTIFIER' 'LITERAL'
         {
             return {
                 type: 'FunctionInvocation',
-                func: {type: 'Identifier', name: $1},
-                arg: $2
-            };
-        }
-    | 'LITERAL'
-        {
-            return {
-                type: 'Literal',
-                value: $1
+                func: {
+                    type: 'Identifier',
+                    name: $1
+                },
+                arg: {
+                    type: 'Literal',
+                    value: $2
+                }
             };
         }
     ;
