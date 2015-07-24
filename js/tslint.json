@@ -31,7 +31,6 @@
     "no-bitwise": true,
     "no-constructor-vars": true,
     "no-duplicate-key": true,
-    "no-shadowed-variable": true,
     "no-duplicate-variable": true,
     "no-unreachable": true,
     "no-unused-expression": true,

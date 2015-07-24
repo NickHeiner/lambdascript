@@ -4,7 +4,7 @@ function withPrelude(js: string): string {
 var print = console.log.bind(console);
 
 ${js}
-`
+`;
 }
 
 export = withPrelude;

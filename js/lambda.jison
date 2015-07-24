@@ -3,9 +3,16 @@
 /* lexical grammar */
 %lex
 
+%s string
+
 %%
 \s+               /* skip whitespace */
-\".*\"     {yytext=yytext.substr(1, yyleng-2); return 'LITERAL';}
+
+["]               { this.begin('STRING'); return 'STRING_START'; }
+<string>[^(\")]   { return 'STRING_CHAR'; }
+<string>[\"]      { return 'ESCAPED_QUOTE'; }
+<string>["]       { this.popState(); return 'STRING_END'; }
+
 print             { return 'IDENTIFIER'; }
 
 /lex
@@ -17,8 +24,29 @@ print             { return 'IDENTIFIER'; }
 
 %% /* language grammar */
 
+string_chars
+    : 'STRING_CHAR'
+        {
+            return [$1];
+        }
+    | 'STRING_CHAR' string_chars
+        {
+            return [$1].concat($2);
+        }
+    ;
+
+literal
+    : 'STRING_START' string_chars 'STRING_END'
+        {
+            return {
+                type: 'Literal',
+                value: $2.join('')
+            };
+        }
+    ;
+
 e
-    : 'IDENTIFIER' 'LITERAL'
+    : 'IDENTIFIER' literal
         {
             return {
                 type: 'FunctionInvocation',

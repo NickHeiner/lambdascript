@@ -1,7 +1,7 @@
 interface ILambdaScriptAstNode {
     // I would like to make this an enum but was not able to fully make it work,
     // because what we are getting from jison is a string.
-    type: string
+    type: string;
 }
 
 interface IFunctionInvocation extends ILambdaScriptAstNode {
@@ -10,15 +10,15 @@ interface IFunctionInvocation extends ILambdaScriptAstNode {
 }
 
 interface ILiteral extends ILambdaScriptAstNode {
-    value: string
+    value: string;
 }
 
 interface IIdentifier extends ILambdaScriptAstNode {
-    name: string
+    name: string;
 }
 
-interface AstToJsAstError extends Error {
-    ast: ILambdaScriptAstNode
+interface IAstToJsAstError extends Error {
+    ast: ILambdaScriptAstNode;
 }
 
 function callExpression(callee: ESTree.Expression|ESTree.Super, args: Array<ESTree.Expression>): ESTree.CallExpression {
@@ -54,7 +54,7 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
                 return identifier;
 
             default:
-                let err = <AstToJsAstError>new Error(`AST node type not implemented: ${JSON.stringify(ast)}`);
+                let err = <IAstToJsAstError>new Error(`AST node type not implemented: ${JSON.stringify(ast)}`);
                 err.ast = ast;
                 throw err;
         }

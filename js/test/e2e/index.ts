@@ -65,4 +65,17 @@ test('lambdascript compiler in js', function(t: any) {
             throw err;
         });
     });
+
+    t.test('strings can contain escaped quotes', function(t: any) {
+        t.plan(1);
+        runTest('string-containing-quotes.lambda').then(function(stdout: string) {
+            stringEqual(
+                t, stdout, 'strings can contain escaped " quotes\n',
+                'string with spaces is printed correctly to standard out'
+            );
+        }).catch(function(err: any) {
+            t.error(err);
+            throw err;
+        });
+    });
 });
