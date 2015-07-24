@@ -9,6 +9,10 @@
 %%
 \s+               /* skip whitespace */
 
+\<                 { return '<'; }
+\>                 { return '>'; }
+(is|and|or)        { return 'BOOLEAN_OPERATOR'; }
+
 ["]                { this.begin('string'); return 'STRING_START'; }
 <string>[\\]       { this.begin('string-escape'); }
 <string-escape>["] { this.popState(); return 'ESCAPED_QUOTE'; }
@@ -55,6 +59,18 @@ literal
               type: 'Literal',
               value: ''
           };
+        }
+    ;
+
+boolean
+    : e BOOLEAN_OPERATOR e
+        {
+            $$ = {
+                type: 'Boolean',
+                left: $1,
+                operator: $2,
+                right: $3
+            }
         }
     ;
 
