@@ -82,4 +82,17 @@ test('lambdascript compiler in js', function(t: any) {
             throw err;
         });
     });
+
+    t.test('booleans', function(t: any) {
+        t.plan(1);
+        runTest('print-boolean.lambda').then(function(stdout: string) {
+            stringEqual(
+                t, stdout, 'true\n',
+                'boolean expression is evaluated and printed correctly to standard out'
+            );
+        }).catch(function(err: any) {
+            t.error(err);
+            throw err;
+        });
+    });
 });
