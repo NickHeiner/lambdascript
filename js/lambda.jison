@@ -5,7 +5,7 @@
 
 %%
 \s+               /* skip whitespace */
-hi                {return 'LITERAL';}
+hello\-world     {return 'LITERAL';}
 print             { return 'IDENTIFIER'; }
 
 /lex
@@ -13,29 +13,17 @@ print             { return 'IDENTIFIER'; }
 /* operator associations and precedence */
 /* TODO */
 
-%start expressions
+%start e
 
 %% /* language grammar */
 
-expressions
-    : e
-        {return $1;}
-    ;
-
 e
-    : e e
+    : 'IDENTIFIER' e
         {
             return {
                 type: 'FunctionInvocation',
-                func: $1,
+                func: {type: 'Identifier', name: $1},
                 arg: $2
-            };
-        }
-    | 'IDENTIFIER'
-        {
-            return {
-                type: 'Identifier',
-                name: $1
             };
         }
     | 'LITERAL'

@@ -8,7 +8,6 @@ const test = require('tape'),
     path = require('path'),
     tmp = require('tmp'),
     q = require('q'),
-    qFs = require('q-io/fs'),
     child_process = require('child_process'),
 
     // we want to nodejs-import rather than require this because we want to test the compiled js
@@ -26,12 +25,6 @@ test('lambdascript compiler in js', function(t: any) {
             .spread(function(jsOutputFilePath: string) {
                 logger.info({jsOutputFilePath: jsOutputFilePath, lsc: lsc}, 'Compiling to js output');
                 return lsc(testFilePath, jsOutputFilePath)
-                    .then(function() {
-                        return qFs.read(jsOutputFilePath);
-                    })
-                    .then(function(jsOutput: string) {
-                        logger.debug({jsOutput: jsOutput}, 'compilation complete');
-                    })
                     .then(function() {
                         const command = `node ${jsOutputFilePath}`;
                         logger.info({command: command}, 'Spawning node on generated js');
