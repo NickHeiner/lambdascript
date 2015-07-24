@@ -29,5 +29,4 @@ function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
     });
 }
 
-// Why is this necessary?
 module.exports = lsc;

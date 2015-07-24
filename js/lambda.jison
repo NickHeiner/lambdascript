@@ -5,7 +5,7 @@
 
 %%
 \s+               /* skip whitespace */
-\"hello\-world\"     {return 'LITERAL';}
+\"(hello\-world)\"     {yytext=yytext.substr(1, yyleng-2); return 'LITERAL';}
 print             { return 'IDENTIFIER'; }
 
 /lex
