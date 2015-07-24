@@ -3,6 +3,7 @@
 'use strict';
 
 import astToJsAst = require('./lib/ast-to-js-ast');
+import withPrelude = require('./lib/with-prelude');
 
 const q = require('q'),
     lambda = require('./lambda'),
@@ -19,9 +20,12 @@ function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
         logger.debug({jsAst: jsAst}, 'Converted LambdaScript AST to JS AST');
 
         const js = escodegen.generate(jsAst);
-        logger.debug({js: js}, 'Generated js');
+        logger.debug({js: js}, 'Generated raw js');
 
-        return qFs.write(outputJsFile, js);
+        const jsWithPrelude = withPrelude(js);
+        logger.debug({jsWithPrelude: jsWithPrelude}, 'Generated raw js');
+
+        return qFs.write(outputJsFile, jsWithPrelude);
     });
 }
 
