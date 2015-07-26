@@ -48,25 +48,8 @@ string_chars
         }
     ;
 
-literal
-    : STRING_START string_chars STRING_END
-        {
-            $$ = {
-                type: 'Literal',
-                value: $2.join('')
-            };
-        }
-    | STRING_START STRING_END
-        {
-          $$ = {
-              type: 'Literal',
-              value: ''
-          };
-        }
-    ;
-
 boolean
-    : OPEN_ANGLE_BRACKET literal BOOLEAN_OPERATOR literal CLOSE_ANGLE_BRACKET
+    : OPEN_ANGLE_BRACKET e BOOLEAN_OPERATOR e CLOSE_ANGLE_BRACKET
         {
             $$ = {
                 type: 'Boolean',
@@ -100,13 +83,27 @@ e
                     arg: $2
                 };
             }
-    | literal STRING_REGEX_LOOKUP
+    | e STRING_REGEX_LOOKUP
         {
             $$ = {
                 type: 'StringRegexLookup',
                 source: $1,
                 regex: $2
             };
+        }
+    | STRING_START string_chars STRING_END
+        {
+            $$ = {
+                type: 'Literal',
+                value: $2.join('')
+            };
+        }
+    | STRING_START STRING_END
+        {
+          $$ = {
+              type: 'Literal',
+              value: ''
+          };
         }
     ;
 
