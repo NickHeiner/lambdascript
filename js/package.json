@@ -9,7 +9,8 @@
   "scripts": {
     "pretest": "tslint -c tslint.json test/**/*.ts *.ts lib/*.ts && jison lambda.jison -t && tsc -p . && tsc -p test/e2e",
     "test": "TAP=1 tape test/**/*.js | tap-difflet",
-    "prepublish": "tsd reinstall"
+    "prepublish": "tsd reinstall",
+    "start": "./bin/lsc.js test/fixtures/print-boolean.lambda /dev/null"
   },
   "devDependencies": {
     "jison": "^0.4.15",

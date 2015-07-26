@@ -18,9 +18,9 @@ interface IIdentifier extends ILambdaScriptAstNode {
 }
 
 interface IBoolean extends ILambdaScriptAstNode {
-    leftHandSide: ILambdaScriptAstNode;
+    left: ILambdaScriptAstNode;
     operator: string;
-    rightHandSide: ILambdaScriptAstNode;
+    right: ILambdaScriptAstNode;
 }
 
 interface IAstToJsAstError extends Error {
@@ -33,6 +33,11 @@ function callExpression(callee: ESTree.Expression|ESTree.Super, args: Array<ESTr
         callee: callee,
         arguments: args
     };
+}
+
+// Why is this necessary?
+interface ILsOperatorToJsOperatorMap {
+    [key: string]: string;
 }
 
 function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
@@ -61,11 +66,16 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
 
             case 'Boolean':
                 const booleanAst = <IBoolean> ast,
+                    jsOperatorOfLsOperator: ILsOperatorToJsOperatorMap = {
+                        is: '===',
+                        and: '&&',
+                        or: '||'
+                    },
                     boolean: ESTree.BinaryExpression = {
                         type: 'BinaryExpression',
-                        left: astToJsAstRec(booleanAst.leftHandSide),
-                        operator: booleanAst.operator,
-                        right: astToJsAstRec(booleanAst.rightHandSide)
+                        left: astToJsAstRec(booleanAst.left),
+                        operator: jsOperatorOfLsOperator[booleanAst.operator],
+                        right: astToJsAstRec(booleanAst.right)
                     };
 
                 return boolean;

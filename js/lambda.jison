@@ -9,8 +9,8 @@
 %%
 \s+               /* skip whitespace */
 
-\<                 { return '<'; }
-\>                 { return '>'; }
+\<                 { return 'OPEN_ANGLE_BRACKET'; }
+\>                 { return 'CLOSE_ANGLE_BRACKET'; }
 (is|and|or)        { return 'BOOLEAN_OPERATOR'; }
 
 ["]                { this.begin('string'); return 'STRING_START'; }
@@ -63,13 +63,13 @@ literal
     ;
 
 boolean
-    : e BOOLEAN_OPERATOR e
+    : OPEN_ANGLE_BRACKET literal BOOLEAN_OPERATOR literal CLOSE_ANGLE_BRACKET
         {
             $$ = {
                 type: 'Boolean',
-                left: $1,
-                operator: $2,
-                right: $3
+                left: $2,
+                operator: $3,
+                right: $4
             }
         }
     ;
@@ -86,6 +86,17 @@ e
                 arg: $2
             };
         }
+    | IDENTIFIER boolean
+            {
+                $$ = {
+                    type: 'FunctionInvocation',
+                    func: {
+                        type: 'Identifier',
+                        name: $1
+                    },
+                    arg: $2
+                };
+            }
     ;
 
 program
