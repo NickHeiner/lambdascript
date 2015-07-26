@@ -100,7 +100,7 @@ test('lambdascript compiler in js', function(t: any) {
         t.plan(1);
         runTest('print-regex-lookup.lambda').then(function(stdout: string) {
             stringEqual(
-                t, stdout, 'ab\n',
+                t, stdout, 'aba\n',
                 'string regex lookup is evaluated and printed correctly to standard out'
             );
         }).catch(function(err: any) {

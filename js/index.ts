@@ -24,7 +24,7 @@ function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
         logger.debug({js: js}, 'Generated raw js');
 
         const jsWithPrelude = withPrelude(js);
-        logger.debug({jsWithPrelude: jsWithPrelude}, 'Generated raw js');
+        logger.debug({jsWithPrelude: jsWithPrelude}, 'Added prelude to raw js');
 
         return qFs.write(outputJsFile, jsWithPrelude);
     });

@@ -22,3 +22,10 @@ Why does adding `import logger = require('../../util/logger/index')` make the ou
 
 [`tsc` complains for new types added in ES6](https://github.com/borisyankov/DefinitelyTyped/issues/4249), 
 so I applied to fix referenced in that issue and am using an older version of the nodejs `d.ts` file.
+
+##### Difficulties using jison
+* When your `.jison` files are invalid, the errors are not always helpful
+* No static analysis is available for `.jison` files
+    * You can have malformed js in your `.jison` file but it will still compile
+* When your language can't be parsed, it's not obvious if it's during the tokenizing or grammar phase
+* Docs are limited

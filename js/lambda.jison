@@ -5,6 +5,7 @@
 
 %x string
 %x string-escape
+%x string-regex-lookup
 
 %%
 \s+               /* skip whitespace */
@@ -18,6 +19,8 @@
 <string-escape>["] { this.popState(); return 'ESCAPED_QUOTE'; }
 <string>["]        { this.popState(); return 'STRING_END'; }
 <string>.          { return 'STRING_CHAR'; }
+
+\[\/.*\/\]         { yytext = yytext.substring(2, yyleng-2); return 'STRING_REGEX_LOOKUP'; }
 
 print              { return 'IDENTIFIER'; }
 
@@ -75,7 +78,7 @@ boolean
     ;
 
 e
-    : IDENTIFIER literal
+    : IDENTIFIER e
         {
             $$ = {
                 type: 'FunctionInvocation',
@@ -97,6 +100,14 @@ e
                     arg: $2
                 };
             }
+    | literal STRING_REGEX_LOOKUP
+        {
+            $$ = {
+                type: 'StringRegexLookup',
+                source: $1,
+                regex: $2
+            };
+        }
     ;
 
 program

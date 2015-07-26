@@ -23,6 +23,11 @@ interface IBoolean extends ILambdaScriptAstNode {
     right: ILambdaScriptAstNode;
 }
 
+interface IStringRegexLookup extends ILambdaScriptAstNode {
+    source: ILambdaScriptAstNode;
+    regex: string;
+}
+
 interface IAstToJsAstError extends Error {
     ast: ILambdaScriptAstNode;
 }
@@ -79,6 +84,28 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
                     };
 
                 return boolean;
+
+            case 'StringRegexLookup':
+                const stringRegexLookupAst = <IStringRegexLookup> ast,
+                    stringRegexLookup: ESTree.CallExpression = {
+                        type: 'CallExpression',
+                        callee: {
+                            type: 'Identifier',
+
+                            // TODO This will prevent anyone from having a function with this name in their code.
+                            // In general, lsc does not provide any protection from the nodejs environment.
+                            name: '__stringRegexLookup'
+                        },
+                        arguments: [
+                            astToJsAstRec(stringRegexLookupAst.source),
+                             {
+                                type: 'Literal',
+                                value: stringRegexLookupAst.regex
+                             }
+                        ]
+                    };
+
+                return stringRegexLookup;
 
             default:
                 let err = <IAstToJsAstError>new Error(`AST node type not implemented: ${JSON.stringify(ast)}`);
