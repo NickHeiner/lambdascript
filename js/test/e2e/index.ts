@@ -95,4 +95,17 @@ test('lambdascript compiler in js', function(t: any) {
             throw err;
         });
     });
+
+    t.test('regex lookup', function(t: any) {
+        t.plan(1);
+        runTest('print-regex-lookup.lambda').then(function(stdout: string) {
+            stringEqual(
+                t, stdout, 'ab\n',
+                'string regex lookup is evaluated and printed correctly to standard out'
+            );
+        }).catch(function(err: any) {
+            t.error(err);
+            throw err;
+        });
+    });
 });
