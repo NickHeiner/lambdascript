@@ -30,3 +30,7 @@ so I applied to fix referenced in that issue and am using an older version of th
 * When your language can't be parsed, it's not obvious if it's during the tokenizing or grammar phase
 * Docs are limited
 * The debugger output is hard to understand
+* It would be nice to get actual line and column numbers when parse errors occur.
+
+##### Other notes
+* Ideological rigidity (like wanting everything to be an expression) can make things harder.

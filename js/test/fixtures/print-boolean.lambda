@@ -1,1 +1,1 @@
-﻿print "identical" is "identical"
+﻿print < "identical" is "identical" >

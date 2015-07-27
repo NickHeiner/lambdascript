@@ -26,19 +26,11 @@
 f                  { return 'FUNC_DECL_START'; }
 \.                 { return 'FUNC_DOT'; }
 
+\;                 { return 'EXPRESSION_SEP'; }
 \S+                { return 'IDENTIFIER'; }
 
+
 /lex
-
-/* I hope that splitting this declaration into multiple lines doesn't cause problems – I'm just doing this for line len.
-%token OPEN_ANGLE_BRACKET CLOSE_ANGLE_BRACKET BOOLEAN_OPERATOR STRING_START ESCAPED_QUOTE STRING_END STRING_CHAR
-%token FUNC_DECL_START FUNC_DOT
-
-%right STRING_REGEX_LOOKUP
-%right IDENTIFIER
-
-/* operator associations and precedence */
-/* TODO */
 
 %start program
 
@@ -61,7 +53,15 @@ string_chars
     ;
 
 e
-    : IDENTIFIER e
+    : OPEN_ANGLE_BRACKET e CLOSE_ANGLE_BRACKET
+        {
+            $$ = $2;
+        }
+    | IDENTIFIER
+        {
+            $$ = $1;
+        }
+    | IDENTIFIER e
         {
             $$ = {
                 type: 'FunctionInvocation',
@@ -110,6 +110,14 @@ e
                 funcName: $2,
                 argName: $3,
                 body: $5
+            };
+        }
+    | e EXPRESSION_SEP e
+        {
+            $$ = {
+                type: 'ExpressionList',
+                expr1: $1,
+                expr2: $3
             };
         }
     ;
