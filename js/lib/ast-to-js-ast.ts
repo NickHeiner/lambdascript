@@ -34,6 +34,11 @@ interface IFunctionDeclaration extends ILambdaScriptAstNode {
     body: ILambdaScriptAstNode;
 }
 
+interface IExpressionList extends ILambdaScriptAstNode {
+    expr1: ILambdaScriptAstNode;
+    expr2: ILambdaScriptAstNode;
+}
+
 interface IAstToJsAstError extends Error {
     ast: ILambdaScriptAstNode;
 }
@@ -136,6 +141,18 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
                     };
 
                 return funcDecl;
+
+            case 'ExpressionList':
+                const exprListAst = <IExpressionList> ast,
+                    exprList: ESTree.BlockStatement = {
+                        type: 'BlockStatement',
+                        body: [
+                            astToJsAstRec(exprListAst.expr1),
+                            astToJsAstRec(exprListAst.expr2)
+                        ]
+                    };
+
+                return exprList;
 
             default:
                 let err = <IAstToJsAstError>new Error(`AST node type not implemented: ${JSON.stringify(ast)}`);

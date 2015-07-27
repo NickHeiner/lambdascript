@@ -34,3 +34,4 @@ so I applied to fix referenced in that issue and am using an older version of th
 
 ##### Other notes
 * Ideological rigidity (like wanting everything to be an expression) can make things harder.
+* Although TS has taken some getting used to, it is generally helpful in solving errors at compile-time.
