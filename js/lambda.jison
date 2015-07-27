@@ -22,9 +22,20 @@
 
 \[\/.*\/\]         { yytext = yytext.substring(2, yyleng-2); return 'STRING_REGEX_LOOKUP'; }
 
-print              { return 'IDENTIFIER'; }
+/* Does making this a lambda break it? */
+f                  { return 'FUNC_DECL_START'; }
+\.                 { return 'FUNC_DOT'; }
+
+\S+                { return 'IDENTIFIER'; }
 
 /lex
+
+/* I hope that splitting this declaration into multiple lines doesn't cause problems – I'm just doing this for line len.
+%token OPEN_ANGLE_BRACKET CLOSE_ANGLE_BRACKET BOOLEAN_OPERATOR STRING_START ESCAPED_QUOTE STRING_END STRING_CHAR
+%token FUNC_DECL_START FUNC_DOT
+
+%right STRING_REGEX_LOOKUP
+%right IDENTIFIER
 
 /* operator associations and precedence */
 /* TODO */
@@ -32,6 +43,7 @@ print              { return 'IDENTIFIER'; }
 %start program
 
 %% /* language grammar */
+/* TODO: There are some shift/reduce conflicts in here – it would be better to sort those out. */
 
 string_chars
     : ESCAPED_QUOTE string_chars
@@ -48,18 +60,6 @@ string_chars
         }
     ;
 
-boolean
-    : OPEN_ANGLE_BRACKET e BOOLEAN_OPERATOR e CLOSE_ANGLE_BRACKET
-        {
-            $$ = {
-                type: 'Boolean',
-                left: $2,
-                operator: $3,
-                right: $4
-            }
-        }
-    ;
-
 e
     : IDENTIFIER e
         {
@@ -72,17 +72,15 @@ e
                 arg: $2
             };
         }
-    | IDENTIFIER boolean
-            {
-                $$ = {
-                    type: 'FunctionInvocation',
-                    func: {
-                        type: 'Identifier',
-                        name: $1
-                    },
-                    arg: $2
-                };
+    | OPEN_ANGLE_BRACKET e BOOLEAN_OPERATOR e CLOSE_ANGLE_BRACKET
+        {
+            $$ = {
+                type: 'Boolean',
+                left: $2,
+                operator: $3,
+                right: $4
             }
+        }
     | e STRING_REGEX_LOOKUP
         {
             $$ = {
@@ -100,10 +98,19 @@ e
         }
     | STRING_START STRING_END
         {
-          $$ = {
+            $$ = {
               type: 'Literal',
               value: ''
-          };
+            };
+        }
+    | FUNC_DECL_START IDENTIFIER IDENTIFIER FUNC_DOT e
+        {
+            $$ = {
+                type: 'FunctionDeclaration',
+                funcName: $2,
+                argName: $3,
+                body: $5
+            };
         }
     ;
 

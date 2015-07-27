@@ -29,3 +29,4 @@ so I applied to fix referenced in that issue and am using an older version of th
     * You can have malformed js in your `.jison` file but it will still compile
 * When your language can't be parsed, it's not obvious if it's during the tokenizing or grammar phase
 * Docs are limited
+* The debugger output is hard to understand

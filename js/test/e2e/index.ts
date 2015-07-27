@@ -108,4 +108,17 @@ test('lambdascript compiler in js', function(t: any) {
             throw err;
         });
     });
+
+    t.test('declare function', function(t: any) {
+        t.plan(1);
+        runTest('declare-function.lambda').then(function(stdout: string) {
+            stringEqual(
+                t, stdout, 'true\nfalse\n',
+                'a function can be declared and invoked'
+            );
+        }).catch(function(err: any) {
+            t.error(err);
+            throw err;
+        });
+    });
 });
