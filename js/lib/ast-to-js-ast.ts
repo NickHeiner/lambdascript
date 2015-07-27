@@ -28,6 +28,12 @@ interface IStringRegexLookup extends ILambdaScriptAstNode {
     regex: string;
 }
 
+interface IFunctionDeclaration extends ILambdaScriptAstNode {
+    funcName: string;
+    argName: string;
+    body: ILambdaScriptAstNode;
+}
+
 interface IAstToJsAstError extends Error {
     ast: ILambdaScriptAstNode;
 }
@@ -106,6 +112,30 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
                     };
 
                 return stringRegexLookup;
+
+            case 'FunctionDeclaration':
+                const funcDeclAst = <IFunctionDeclaration> ast,
+                    funcDecl: ESTree.FunctionDeclaration = {
+                        type: 'FunctionDeclaration',
+                        id: {
+                            type: 'Identifier',
+                            name: funcDeclAst.funcName
+                        },
+                        params: [{
+                            type: 'Identifier',
+                            name: funcDeclAst.argName
+                        }],
+                        body: {
+                            type: 'BlockStatement',
+                            body: [{
+                                type: 'ReturnStatement',
+                                argument: astToJsAstRec(funcDeclAst.body)
+                            }]
+                        },
+                        generator: false
+                    };
+
+                return funcDecl;
 
             default:
                 let err = <IAstToJsAstError>new Error(`AST node type not implemented: ${JSON.stringify(ast)}`);
