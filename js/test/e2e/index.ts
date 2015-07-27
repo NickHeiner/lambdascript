@@ -109,6 +109,19 @@ test('lambdascript compiler in js', function(t: any) {
         });
     });
 
+    t.test('regex lookup from an identifier', function(t: any) {
+        t.plan(1);
+        runTest('print-regex-lookup-from-identifier.lambda').then(function(stdout: string) {
+            stringEqual(
+                t, stdout, 'aba\n',
+                'string regex lookup from an identifier is evaluated and printed correctly to standard out'
+            );
+        }).catch(function(err: any) {
+            t.error(err);
+            throw err;
+        });
+    });
+
     t.test('declare function', function(t: any) {
         t.plan(1);
         runTest('declare-function.lambda').then(function(stdout: string) {
