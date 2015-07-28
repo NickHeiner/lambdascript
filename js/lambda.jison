@@ -27,7 +27,7 @@ f                  { return 'FUNC_DECL_START'; }
 \.                 { return 'FUNC_DOT'; }
 
 \;                 { return 'EXPRESSION_SEP'; }
-\S+                { return 'IDENTIFIER'; }
+\w+                { return 'IDENTIFIER'; }
 
 
 /lex
