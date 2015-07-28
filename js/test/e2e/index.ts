@@ -58,6 +58,17 @@ test('lambdascript compiler in js', function(t: any) {
         });
     });
 
+
+    t.test('print empty string', function(t: any) {
+        t.plan(1);
+        runTest('print-empty-string.lambda').then(function(stdout: string) {
+            stringEqual(t, stdout, '\n', 'empty string is printed correctly to standard out');
+        }).catch(function(err: any) {
+            t.error(err);
+            throw err;
+        });
+    });
+
     t.test('strings can have spaces', function(t: any) {
         t.plan(1);
         runTest('strings-have-spaces.lambda').then(function(stdout: string) {
