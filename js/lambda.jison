@@ -59,16 +59,16 @@ e
         }
     | IDENTIFIER
         {
-            $$ = $1;
+            $$ = {
+                type: 'Identifier',
+                name: $1
+            };
         }
-    | IDENTIFIER e
+    | e e
         {
             $$ = {
                 type: 'FunctionInvocation',
-                func: {
-                    type: 'Identifier',
-                    name: $1
-                },
+                func: $1,
                 arg: $2
             };
         }
