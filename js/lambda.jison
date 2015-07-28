@@ -34,26 +34,12 @@ f                  return 'FUNC_DECL_START';
 
 /lex
 
+%ebnf
+
 %start program
 
 %% /* language grammar */
 /* TODO: There are some shift/reduce conflicts in here – it would be better to sort those out. */
-
-/* TODO maybe this could be simplified with ebnf – https://gist.github.com/zaach/1659274 */
-string_chars
-    : ESCAPED_QUOTE string_chars
-        {
-            $$ = [$1].concat($2);
-        }
-    | STRING_CHAR string_chars
-        {
-            $$ = [$1].concat($2);
-        }
-    | STRING_CHAR
-        {
-            $$ = [$1];
-        }
-    ;
 
 e
     : OPEN_ANGLE_BRACKET e CLOSE_ANGLE_BRACKET
@@ -92,7 +78,7 @@ e
                 regex: $2
             };
         }
-    | STRING_START string_chars STRING_END
+    | STRING_START (STRING_CHAR|ESCAPED_QUOTE)* STRING_END
         {
             $$ = {
                 type: 'Literal',
