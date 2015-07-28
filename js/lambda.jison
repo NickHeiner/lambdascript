@@ -85,13 +85,6 @@ e
                 value: $2.join('')
             };
         }
-    | STRING_START STRING_END
-        {
-            $$ = {
-              type: 'Literal',
-              value: ''
-            };
-        }
     | FUNC_DECL_START IDENTIFIER IDENTIFIER FUNC_DOT e FUNC_END
         {
             $$ = {
