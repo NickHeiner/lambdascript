@@ -22,8 +22,7 @@
 
 \[\/.*\/\]         { yytext = yytext.substring(2, yyleng-2); return 'STRING_REGEX_LOOKUP'; }
 
-/* Does making this a lambda break it? */
-f                  return 'FUNC_DECL_START';
+'λ'                  return 'FUNC_DECL_START';
 \.                 return 'FUNC_DOT';
 /* This is intentionally ugly so I remember to fix it. */
 \}                 return 'FUNC_END';

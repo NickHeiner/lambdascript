@@ -1,4 +1,4 @@
-﻿f endsWithFoo str .
+﻿λ endsWithFoo str .
 	 < str[/(foo)$/] is "foo" >};
 
 < print < endsWithFoo "foo" > >;
