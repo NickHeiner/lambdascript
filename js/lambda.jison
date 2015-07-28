@@ -12,7 +12,7 @@
 
 \<                 return 'OPEN_ANGLE_BRACKET';
 \>                 return 'CLOSE_ANGLE_BRACKET';
-(is|and|or)        return 'BOOLEAN_OPERATOR';
+\b(is|and|or)\b    return 'BOOLEAN_OPERATOR';
 
 ["]                { this.begin('string'); return 'STRING_START'; }
 <string>[\\]       this.begin('string-escape');
@@ -20,7 +20,7 @@
 <string>["]        { this.popState(); return 'STRING_END'; }
 <string>.          return 'STRING_CHAR';
 
-\[\/.*\/\]         { yytext = yytext.substring(2, yyleng-2); return 'STRING_REGEX_LOOKUP'; }
+\[\/[^\/\]]*\/\]   { yytext = yytext.substring(2, yyleng-2); return 'STRING_REGEX_LOOKUP'; }
 
 'λ'                return 'FUNC_DECL_START';
 \.                 return 'FUNC_DOT';
