@@ -1,5 +1,5 @@
 ﻿f endsWithFoo str .
-	 < str[/(foo)$/] is "foo" >;
+	 < str[/(foo)$/] is "foo" >};
 
 print < endsWithFoo "this string ends in foo" >;
 print < endsWithFoo "foo is not the end of this string" >

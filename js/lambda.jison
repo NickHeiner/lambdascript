@@ -25,6 +25,8 @@
 /* Does making this a lambda break it? */
 f                  { return 'FUNC_DECL_START'; }
 \.                 { return 'FUNC_DOT'; }
+/* This is intentionally ugly so I remember to fix it. */
+\}                 { return 'FUNC_END'; }
 
 \;                 { return 'EXPRESSION_SEP'; }
 \w+                { return 'IDENTIFIER'; }
@@ -37,6 +39,7 @@ f                  { return 'FUNC_DECL_START'; }
 %% /* language grammar */
 /* TODO: There are some shift/reduce conflicts in here – it would be better to sort those out. */
 
+/* TODO maybe this could be simplified with ebnf – https://gist.github.com/zaach/1659274 */
 string_chars
     : ESCAPED_QUOTE string_chars
         {
@@ -103,7 +106,7 @@ e
               value: ''
             };
         }
-    | FUNC_DECL_START IDENTIFIER IDENTIFIER FUNC_DOT e
+    | FUNC_DECL_START IDENTIFIER IDENTIFIER FUNC_DOT e FUNC_END
         {
             $$ = {
                 type: 'FunctionDeclaration',

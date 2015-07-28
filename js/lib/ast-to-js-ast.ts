@@ -56,29 +56,37 @@ interface ILsOperatorToJsOperatorMap {
     [key: string]: string;
 }
 
+function single<T>(arr: Array<T>): T {
+    if (arr.length > 1) {
+        throw new Error('Expected array to have only a single element, but was: `' + arr + '`');
+    }
+
+    return arr[0];
+}
+
 function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
-    function astToJsAstRec(ast: ILambdaScriptAstNode): ESTree.Expression {
+    function astToJsAstRec(ast: ILambdaScriptAstNode): Array<ESTree.Expression|ESTree.Statement> {
         switch (ast.type) {
             case 'FunctionInvocation':
                 const funcInvocationAst = <IFunctionInvocation> ast,
                     exprStatement: ESTree.ExpressionStatement = {
                         type: 'ExpressionStatement',
                         expression: callExpression(
-                            astToJsAstRec(funcInvocationAst.func),
-                            [astToJsAstRec(funcInvocationAst.arg)]
+                            single(astToJsAstRec(funcInvocationAst.func)),
+                            astToJsAstRec(funcInvocationAst.arg)
                         )
                     };
-                return exprStatement;
+                return [exprStatement];
 
             case 'Literal':
                 const litAst = <ILiteral> ast,
                     literal: ESTree.Literal = {value: litAst.value, type: 'Literal'};
-                return literal;
+                return [literal];
 
             case 'Identifier':
                 const identAst = <IIdentifier> ast,
                     identifier: ESTree.Identifier = {name: identAst.name, type: 'Identifier'};
-                return identifier;
+                return [identifier];
 
             case 'Boolean':
                 const booleanAst = <IBoolean> ast,
@@ -87,14 +95,14 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
                         and: '&&',
                         or: '||'
                     },
-                    boolean: ESTree.BinaryExpression = {
+                    booleanExpr: ESTree.BinaryExpression = {
                         type: 'BinaryExpression',
-                        left: astToJsAstRec(booleanAst.left),
+                        left: single(astToJsAstRec(booleanAst.left)),
                         operator: jsOperatorOfLsOperator[booleanAst.operator],
-                        right: astToJsAstRec(booleanAst.right)
+                        right: single(astToJsAstRec(booleanAst.right))
                     };
 
-                return boolean;
+                return [booleanExpr];
 
             case 'StringRegexLookup':
                 const stringRegexLookupAst = <IStringRegexLookup> ast,
@@ -108,7 +116,7 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
                             name: '__stringRegexLookup'
                         },
                         arguments: [
-                            astToJsAstRec(stringRegexLookupAst.source),
+                            single(astToJsAstRec(stringRegexLookupAst.source)),
                              {
                                 type: 'Literal',
                                 value: stringRegexLookupAst.regex
@@ -116,7 +124,7 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
                         ]
                     };
 
-                return stringRegexLookup;
+                return [stringRegexLookup];
 
             case 'FunctionDeclaration':
                 const funcDeclAst = <IFunctionDeclaration> ast,
@@ -134,25 +142,17 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
                             type: 'BlockStatement',
                             body: [{
                                 type: 'ReturnStatement',
-                                argument: astToJsAstRec(funcDeclAst.body)
+                                argument: single(astToJsAstRec(funcDeclAst.body))
                             }]
                         },
                         generator: false
                     };
 
-                return funcDecl;
+                return [funcDecl];
 
             case 'ExpressionList':
-                const exprListAst = <IExpressionList> ast,
-                    exprList: ESTree.BlockStatement = {
-                        type: 'BlockStatement',
-                        body: [
-                            astToJsAstRec(exprListAst.expr1),
-                            astToJsAstRec(exprListAst.expr2)
-                        ]
-                    };
-
-                return exprList;
+                const exprListAst = <IExpressionList> ast;
+                return astToJsAstRec(exprListAst.expr1).concat(astToJsAstRec(exprListAst.expr2));
 
             default:
                 let err = <IAstToJsAstError>new Error(`AST node type not implemented: ${JSON.stringify(ast)}`);
@@ -163,7 +163,7 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
     
     return {
         type: 'Program',
-        body: [astToJsAstRec(ast)],
+        body: astToJsAstRec(ast),
 
         sourceType: 'I am not sure what this value is supposed to be'
     };
