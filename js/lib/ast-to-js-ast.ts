@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 interface ILambdaScriptAstNode {
     // I would like to make this an enum but was not able to fully make it work,
     // because what we are getting from jison is a string.
@@ -69,14 +71,11 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
         switch (ast.type) {
             case 'FunctionInvocation':
                 const funcInvocationAst = <IFunctionInvocation> ast,
-                    exprStatement: ESTree.ExpressionStatement = {
-                        type: 'ExpressionStatement',
-                        expression: callExpression(
-                            single(astToJsAstRec(funcInvocationAst.func)),
-                            astToJsAstRec(funcInvocationAst.arg)
-                        )
-                    };
-                return [exprStatement];
+                    callExpr = callExpression(
+                        single(astToJsAstRec(funcInvocationAst.func)),
+                        astToJsAstRec(funcInvocationAst.arg)
+                    );
+                return [callExpr];
 
             case 'Literal':
                 const litAst = <ILiteral> ast,
@@ -106,23 +105,22 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
 
             case 'StringRegexLookup':
                 const stringRegexLookupAst = <IStringRegexLookup> ast,
-                    stringRegexLookup: ESTree.CallExpression = {
-                        type: 'CallExpression',
-                        callee: {
+                    stringRegexLookup = callExpression(
+                        {
                             type: 'Identifier',
 
                             // TODO This will prevent anyone from having a function with this name in their code.
                             // In general, lsc does not provide any protection from the nodejs environment.
                             name: '__stringRegexLookup'
                         },
-                        arguments: [
+                        [
                             single(astToJsAstRec(stringRegexLookupAst.source)),
                              {
                                 type: 'Literal',
                                 value: stringRegexLookupAst.regex
                              }
                         ]
-                    };
+                    );
 
                 return [stringRegexLookup];
 
@@ -151,8 +149,18 @@ function astToJsAst(ast: ILambdaScriptAstNode): ESTree.Program {
                 return [funcDecl];
 
             case 'ExpressionList':
-                const exprListAst = <IExpressionList> ast;
-                return astToJsAstRec(exprListAst.expr1).concat(astToJsAstRec(exprListAst.expr2));
+                const exprListAst = <IExpressionList> ast,
+                    expressions = astToJsAstRec(exprListAst.expr1).concat(astToJsAstRec(exprListAst.expr2));
+                return _.map(expressions, function(expr: ESTree.Expression|ESTree.Statement) {
+                    if (expr.type === 'CallExpression') {
+                        return {
+                            type: 'ExpressionStatement',
+                            expression: expr
+                        };
+                    }
+
+                    return expr;
+                });
 
             default:
                 let err = <IAstToJsAstError>new Error(`AST node type not implemented: ${JSON.stringify(ast)}`);
