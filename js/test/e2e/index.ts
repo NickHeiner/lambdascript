@@ -132,4 +132,17 @@ test('lambdascript compiler in js', function(t: any) {
             throw err;
         });
     });
+
+    t.test('palindrome sample', function(t: any) {
+        t.plan(1);
+        runTest('sample.lambda').then(function(stdout: string) {
+            stringEqual(
+                t, stdout, 'false\ntrue\n',
+                'a function can be declared and invoked'
+            );
+        }).catch(function(err: any) {
+            t.error(err);
+            throw err;
+        });
+    });
 });

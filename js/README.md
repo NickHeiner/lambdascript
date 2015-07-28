@@ -32,3 +32,4 @@ so I applied to fix referenced in that issue and am using an older version of th
 * Although TS has taken some getting used to, it is generally helpful in solving errors at compile-time.
 * Writing unambiguous grammars is hard. Discuss shift/reduce conflicts and how to solve them.
     * Alternatively: there is no problem you can't solve with more shitty syntax. Writing a language with minimal syntax is hard.
+    * When I wrote bottomUpParse, I resolved conflicts by reducing. Jison and Bison resolve conflicts by shifting, which required changing the grammar.
