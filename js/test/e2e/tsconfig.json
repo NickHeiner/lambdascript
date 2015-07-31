@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "preserveConstEnums": true,
+    "noEmitOnError": true
+  },
+  "files": [
+    "index.ts"
+  ]
+}

@@ -1,0 +1,5 @@
+﻿λ endsWithFoo str .
+	 < str[/(foo)$/] is "foo" >};
+
+< print < endsWithFoo "foo" > >;
+print < endsWithFoo "foo-" >

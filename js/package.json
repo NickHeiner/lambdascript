@@ -1,0 +1,39 @@
+{
+  "name": "lsc",
+  "version": "1.0.0-0",
+  "description": "An io.js compatible implementation of the lambdascript compiler",
+  "repository": "https://github.com/NickHeiner/lambdascript/",
+  "bin": {
+    "lsc": "./bin/lsc.js"
+  },
+  "scripts": {
+    "pretest": "tslint -c tslint.json test/**/*.ts *.ts lib/*.ts && jison lambda.jison -t && tsc -p . && tsc -p test/e2e",
+    "test": "TAP=1 tape test/**/*.js | tap-difflet",
+    "prepublish": "tsd reinstall",
+    "start": "./bin/lsc.js test/fixtures/sample.lambda /dev/null --loglevel=debug"
+  },
+  "devDependencies": {
+    "jison": "^0.4.15",
+    "q": "^1.4.1",
+    "tap-difflet": "^0.3.0",
+    "tape": "^4.0.1",
+    "tmp": "0.0.26",
+    "tsc": "^1.20150623.0",
+    "tsd": "^0.6.3",
+    "tslint": "^2.1.1"
+  },
+  "dependencies": {
+    "bunyan": "^1.4.0",
+    "bunyan-format": "^0.2.1",
+    "chalk": "^1.1.0",
+    "escodegen": "^1.6.1",
+    "flat": "^1.6.0",
+    "lodash": "^3.10.0",
+    "minimist": "^1.1.1",
+    "nconf": "^0.7.1",
+    "q-io": "^1.11.5",
+    "strip-ansi": "^3.0.0",
+    "through2": "^2.0.0",
+    "traverse": "^0.6.6"
+  }
+}
