@@ -1,1 +1,1 @@
-﻿print "abacab"[/^(a|b)+/]
+﻿print "abacab"[/^((a|b)+)/]

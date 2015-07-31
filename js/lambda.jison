@@ -20,6 +20,7 @@
 <string>["]        { this.popState(); return 'STRING_END'; }
 <string>.          return 'STRING_CHAR';
 
+/* This does not account for regex flags that come after the trailing / */
 \[\/[^\/\]]*\/\]   { yytext = yytext.substring(2, yyleng-2); return 'STRING_REGEX_LOOKUP'; }
 
 'λ'                return 'FUNC_DECL_START';
