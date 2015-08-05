@@ -2,6 +2,12 @@ interface ILambdaScriptAstNode {
     // I would like to make this an enum but was not able to fully make it work,
     // because what we are getting from jison is a string.
     type: string;
+    loc?: {
+        first_line: number,
+        last_line: number,
+        first_column: number,
+        last_column: number
+    };
 }
 
 interface IFunctionInvocation extends ILambdaScriptAstNode {
