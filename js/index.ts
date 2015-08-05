@@ -5,6 +5,7 @@
 import './types';
 import astToJsAst = require('./lib/ast-to-js-ast');
 import withPrelude = require('./lib/with-prelude');
+import getHighlightedCode = require('./lib/get-highlighted-code');
 
 const lambda = require('./lambda'),
     logger = require('./util/logger'),
@@ -40,7 +41,7 @@ function lscHighlight(inputLambdaScriptFile: string): Q.IPromise<void> {
     return qFs.read(inputLambdaScriptFile).then(function(lambdaScriptCode: string) {
         const lscAst = getLscAst(lambdaScriptCode);
 
-        console.log(lambdaScriptCode, lscAst);
+        console.log(getHighlightedCode(lscAst, lambdaScriptCode));
     });
 }
 
