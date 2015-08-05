@@ -1,13 +1,15 @@
+interface ILoc {
+    first_line: number;
+    last_line: number;
+    first_column: number;
+    last_column: number;
+}
+
 interface ILambdaScriptAstNode {
     // I would like to make this an enum but was not able to fully make it work,
     // because what we are getting from jison is a string.
     type: string;
-    loc?: {
-        first_line: number,
-        last_line: number,
-        first_column: number,
-        last_column: number
-    };
+    loc?: ILoc;
 }
 
 interface IFunctionInvocation extends ILambdaScriptAstNode {
@@ -32,6 +34,7 @@ interface IBoolean extends ILambdaScriptAstNode {
 interface IStringRegexLookup extends ILambdaScriptAstNode {
     source: ILambdaScriptAstNode;
     regex: string;
+    regexLoc?: ILoc;
 }
 
 interface IFunctionDeclaration extends ILambdaScriptAstNode {

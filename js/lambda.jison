@@ -76,7 +76,8 @@ e
             $$ = {
                 type: 'StringRegexLookup',
                 source: $1,
-                regex: $2
+                regex: $2,
+                regexLoc: @2
             };
         }
     | STRING_START (STRING_CHAR|ESCAPED_QUOTE)* STRING_END
