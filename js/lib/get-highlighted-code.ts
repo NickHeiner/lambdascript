@@ -8,7 +8,8 @@ const chalk = require('chalk'),
     os = require('os'),
 
     colorMap: IStringMap = {
-        Identifier: 'magenta'
+        Identifier: 'magenta',
+        Literal: 'yellow',
     };
 
 interface IStringMap {

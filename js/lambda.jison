@@ -83,7 +83,8 @@ e
         {
             $$ = {
                 type: 'Literal',
-                value: $2.join('')
+                value: $2.join(''),
+                loc: @$
             };
         }
     | FUNC_DECL_START IDENTIFIER IDENTIFIER FUNC_DOT e FUNC_END
