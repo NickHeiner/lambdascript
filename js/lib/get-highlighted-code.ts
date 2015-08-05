@@ -17,60 +17,63 @@ interface IStringMap {
     [key: string]: string;
 }
 
-
-// One potential way to fail fast here would be to detect when we are coloring over an existing highlight.
-// I have yet to encounter a case where that was expected behavior.
-
-function getLineColorAction(lines: string[], loc: ILoc, colorFn: (str: string) => string): string[] {
-    if (loc.first_line !== loc.last_line) {
-        // We do not support syntax highlighting across lines for now.
-        return lines;
-    }
-
-    // I don't know why but jison does not 0 index the line number.
-    const lineIndex = loc.first_line - 1,
-
-        linesClone = _.clone(lines),
-        lineToColor = linesClone[lineIndex],
-
-        existingColorOffset = lineToColor.length - chalk.stripColor(lineToColor).length,
-
-        colStart = loc.first_column + existingColorOffset,
-        colEnd = loc.last_column + existingColorOffset;
-
-    linesClone[lineIndex] =
-        lineToColor.slice(0, colStart) +
-        colorFn(lineToColor.slice(colStart, colEnd)) +
-        lineToColor.slice(colEnd);
-
-    logger.debug({
-        existingColorOffset: existingColorOffset,
-        original: lines[lineIndex],
-        colored: linesClone[lineIndex],
-        lineIndex: lineIndex,
-        colStart: colStart,
-        colEnd: colEnd
-    }, 'Coloring line portion');
-
-    return linesClone;
+interface ILineColorAction {
+    lineIndex: number;
+    colStart: number;
+    colEnd: number;
+    colorFn: (str: string) => string;
 }
 
 function getHighlightedCode(lscAst: ILambdaScriptAstNode, lambdaScriptCode: string) {
     const codeByLines = _str.lines(lambdaScriptCode),
-        coloredCode = traverse(lscAst).reduce(function(acc: string[], astNode: ILambdaScriptAstNode) {
-            const color = colorMap[astNode.type];
+        colorActions = traverse(lscAst)
+            .reduce(function(colorActions: ILineColorAction[], astNode: ILambdaScriptAstNode) {
+                const color = colorMap[astNode.type];
 
-            if (color) {
-                const colorFn = chalk[color].bind(chalk),
-                    loc = astNode.type === 'StringRegexLookup' ? (<IStringRegexLookup> astNode).regexLoc : astNode.loc;
+                if (color) {
+                    const colorFn = chalk[color].bind(chalk),
+                        loc = astNode.type === 'StringRegexLookup' ?
+                            (<IStringRegexLookup> astNode).regexLoc : astNode.loc;
 
-                logger.debug({astNode: astNode}, 'Coloring node');
+                    return colorActions.concat({
+                        // I don't know why but jison does not 0-index the line number.
+                        lineIndex: loc.first_line - 1,
+                        colStart: loc.first_column,
+                        colEnd: loc.last_column,
+                        colorFn: colorFn
+                    });
+                }
 
-                return getLineColorAction(acc, loc, colorFn);
-            }
+                return colorActions;
+            }, []),
 
-            return acc;
-        }, codeByLines);
+        coloredCode = _(colorActions)
+            .sortByAll(['lineIndex', 'colStart'])
+            .reduce(function(lines: string[], colorAction: ILineColorAction) {
+
+                const linesClone = _.clone(lines),
+                    lineToColor = linesClone[colorAction.lineIndex],
+
+                    existingColorOffset = lineToColor.length - chalk.stripColor(lineToColor).length,
+
+                    colStartWithOffset = colorAction.colStart + existingColorOffset,
+                    colEndWithOffset = colorAction.colEnd + existingColorOffset;
+
+                // One potential way to fail fast here would be to detect when we are coloring
+                // over an existing highlight. I have yet to encounter a case where that was expected behavior.
+
+                linesClone[colorAction.lineIndex] =
+                    lineToColor.slice(0, colStartWithOffset) +
+                    colorAction.colorFn(lineToColor.slice(colStartWithOffset, colEndWithOffset)) +
+                    lineToColor.slice(colEndWithOffset);
+
+                logger.debug({
+                    original: lines[colorAction.lineIndex],
+                    colored: linesClone[colorAction.lineIndex]
+                }, 'Coloring line');
+
+                return linesClone;
+            }, codeByLines);
 
     return coloredCode.join(os.EOL);
 }
