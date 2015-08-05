@@ -50,7 +50,8 @@ e
         {
             $$ = {
                 type: 'Identifier',
-                name: $1
+                name: $1,
+                loc: @$
             };
         }
     | e e
