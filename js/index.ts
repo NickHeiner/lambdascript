@@ -2,6 +2,7 @@
 
 'use strict';
 
+import './types';
 import astToJsAst = require('./lib/ast-to-js-ast');
 import withPrelude = require('./lib/with-prelude');
 
@@ -10,13 +11,19 @@ const lambda = require('./lambda'),
     escodegen = require('escodegen'),
     qFs = require('q-io/fs');
 
-function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
+function lscAst(inputLambdaScriptFile: string): Q.IPromise<ILambdaScriptAstNode> {
     return qFs.read(inputLambdaScriptFile).then(function(lambdaScriptCode: string) {
         logger.debug({lambdaScriptCode: lambdaScriptCode}, 'Read LambdaScript code from file system');
 
         const jisonOutput = lambda.parser.parse(lambdaScriptCode);
         logger.debug({jisonOutput: jisonOutput}, 'Parsed LambdaScript code');
 
+        return jisonOutput;
+    });
+}
+
+function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
+    return lscAst(inputLambdaScriptFile).then(function(jisonOutput) {
         const jsAst = astToJsAst(jisonOutput);
         logger.debug({jsAst: jsAst}, 'Converted LambdaScript AST to JS AST');
 
@@ -31,3 +38,4 @@ function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
 }
 
 module.exports = lsc;
+module.exports.ast = lscAst;
