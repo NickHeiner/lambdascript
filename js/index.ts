@@ -37,11 +37,10 @@ function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
     });
 }
 
-function lscHighlight(inputLambdaScriptFile: string): Q.IPromise<void> {
+function lscHighlight(inputLambdaScriptFile: string): Q.IPromise<string> {
     return qFs.read(inputLambdaScriptFile).then(function(lambdaScriptCode: string) {
         const lscAst = getLscAst(lambdaScriptCode);
-
-        console.log(getHighlightedCode(lscAst, lambdaScriptCode));
+        return getHighlightedCode(lscAst, lambdaScriptCode);
     });
 }
 
