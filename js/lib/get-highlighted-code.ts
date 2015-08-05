@@ -10,14 +10,18 @@ const chalk = require('chalk'),
     colorMap: IStringMap = {
         Identifier: 'magenta',
         Literal: 'yellow',
-        // StringRegexLookup: 'green'
+        StringRegexLookup: 'green'
     };
 
 interface IStringMap {
     [key: string]: string;
 }
 
-function colorLine(lines: string[], loc: ILoc, colorFn: (str: string) => string): string[] {
+
+// One potential way to fail fast here would be to detect when we are coloring over an existing highlight.
+// I have yet to encounter a case where that was expected behavior.
+
+function getLineColorAction(lines: string[], loc: ILoc, colorFn: (str: string) => string): string[] {
     if (loc.first_line !== loc.last_line) {
         // We do not support syntax highlighting across lines for now.
         return lines;
@@ -60,7 +64,9 @@ function getHighlightedCode(lscAst: ILambdaScriptAstNode, lambdaScriptCode: stri
                 const colorFn = chalk[color].bind(chalk),
                     loc = astNode.type === 'StringRegexLookup' ? (<IStringRegexLookup> astNode).regexLoc : astNode.loc;
 
-                return colorLine(acc, loc, colorFn);
+                logger.debug({astNode: astNode}, 'Coloring node');
+
+                return getLineColorAction(acc, loc, colorFn);
             }
 
             return acc;

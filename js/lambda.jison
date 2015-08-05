@@ -77,7 +77,7 @@ e
                 type: 'StringRegexLookup',
                 source: $1,
                 regex: $2,
-                regexLoc: @2
+                regexLoc: @STRING_REGEX_LOOKUP
             };
         }
     | STRING_START (STRING_CHAR|ESCAPED_QUOTE)* STRING_END
