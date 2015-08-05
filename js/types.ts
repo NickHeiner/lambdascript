@@ -42,6 +42,7 @@ interface IFunctionDeclaration extends ILambdaScriptAstNode {
     funcName: string;
     argName: string;
     body: ILambdaScriptAstNode;
+    funcNameLoc: ILoc;
 }
 
 interface IExpressionList extends ILambdaScriptAstNode {

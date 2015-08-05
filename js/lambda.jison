@@ -95,7 +95,8 @@ e
                 type: 'FunctionDeclaration',
                 funcName: $2,
                 argName: $3,
-                body: $5
+                body: $5,
+                funcNameLoc: @2
             };
         }
     | e EXPRESSION_SEP e

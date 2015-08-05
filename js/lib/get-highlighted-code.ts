@@ -11,12 +11,14 @@ const chalk = require('chalk'),
         Identifier: 'magenta',
         Literal: 'yellow',
         StringRegexLookup: 'green',
-        Boolean: 'blue'
+        Boolean: 'blue',
+        FunctionDeclaration: 'red'
     },
 
     alternateLocMap: IStringMap = {
         StringRegexLookup: 'regexLoc',
-        Boolean: 'booleanLoc'
+        Boolean: 'booleanLoc',
+        FunctionDeclaration: 'funcNameLoc'
     };
 
 interface IStringMap {
