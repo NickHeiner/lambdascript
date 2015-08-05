@@ -4,10 +4,11 @@ const chalk = require('chalk'),
     _str = require('underscore.string'),
     _ = require('lodash'),
     traverse = require('traverse'),
+    logger = require('../util/logger'),
     os = require('os'),
 
     colorMap: IStringMap = {
-        Identifier: 'cyan'
+        Identifier: 'magenta'
     };
 
 interface IStringMap {
@@ -39,10 +40,26 @@ function getHighlightedCode(lscAst: ILambdaScriptAstNode, lambdaScriptCode: stri
                     return acc;
                 }
 
-                const accClone = _.clone(acc),
-                    lineToColor = accClone[astNode.loc.first_line];
+                // I don't know why but jison does not 0 index the line number.
+                const lineIndex = astNode.loc.first_line - 1,
+                    colStart = astNode.loc.first_column,
+                    colEnd = astNode.loc.last_column,
 
-                accClone[astNode.loc.first_line] = colorFn(lineToColor);
+                    accClone = _.clone(acc),
+                    lineToColor = accClone[lineIndex];
+
+                accClone[lineIndex] =
+                    lineToColor.slice(0, colStart) +
+                    colorFn(lineToColor.slice(colStart, colEnd + 1)) +
+                    lineToColor.slice(colEnd + 1);
+
+                logger.debug({
+                    original: acc[lineIndex],
+                    colored: accClone[lineIndex],
+                    lineIndex: lineIndex,
+                    colStart: colStart,
+                    colEnd: colEnd
+                }, 'Coloring line portion');
 
                 return accClone;
             }
