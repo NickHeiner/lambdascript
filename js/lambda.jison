@@ -68,7 +68,8 @@ e
                 type: 'Boolean',
                 left: $2,
                 operator: $3,
-                right: $4
+                right: $4,
+                booleanLoc: @BOOLEAN_OPERATOR
             }
         }
     | e STRING_REGEX_LOOKUP

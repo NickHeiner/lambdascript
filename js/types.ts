@@ -29,12 +29,13 @@ interface IBoolean extends ILambdaScriptAstNode {
     left: ILambdaScriptAstNode;
     operator: string;
     right: ILambdaScriptAstNode;
+    booleanLoc: ILoc;
 }
 
 interface IStringRegexLookup extends ILambdaScriptAstNode {
     source: ILambdaScriptAstNode;
     regex: string;
-    regexLoc?: ILoc;
+    regexLoc: ILoc;
 }
 
 interface IFunctionDeclaration extends ILambdaScriptAstNode {

@@ -10,7 +10,13 @@ const chalk = require('chalk'),
     colorMap: IStringMap = {
         Identifier: 'magenta',
         Literal: 'yellow',
-        StringRegexLookup: 'green'
+        StringRegexLookup: 'green',
+        Boolean: 'blue'
+    },
+
+    alternateLocMap: IStringMap = {
+        StringRegexLookup: 'regexLoc',
+        Boolean: 'booleanLoc'
     };
 
 interface IStringMap {
@@ -32,8 +38,10 @@ function getHighlightedCode(lscAst: ILambdaScriptAstNode, lambdaScriptCode: stri
 
                 if (color) {
                     const colorFn = chalk[color].bind(chalk),
-                        loc = astNode.type === 'StringRegexLookup' ?
-                            (<IStringRegexLookup> astNode).regexLoc : astNode.loc;
+                        locKey = alternateLocMap[astNode.type] || 'loc',
+
+                        // I'm just using _.result to avoid TS7017
+                        loc: ILoc = _.result(astNode, locKey);
 
                     /**
                      * Originally, I just colored as soon as I found a node. However, this does not work,
