@@ -12,7 +12,7 @@ const chalk = require('chalk'),
         Literal: 'yellow',
         StringRegexLookup: 'green',
         Boolean: 'blue',
-        FunctionDeclaration: 'red'
+        FunctionDeclaration: 'cyan'
     },
 
     alternateLocMap: IStringMap = {
