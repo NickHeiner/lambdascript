@@ -42,18 +42,23 @@ function getHighlightedCode(lscAst: ILambdaScriptAstNode, lambdaScriptCode: stri
 
                 // I don't know why but jison does not 0 index the line number.
                 const lineIndex = astNode.loc.first_line - 1,
-                    colStart = astNode.loc.first_column,
-                    colEnd = astNode.loc.last_column,
 
                     accClone = _.clone(acc),
-                    lineToColor = accClone[lineIndex];
+                    lineToColor = accClone[lineIndex],
+
+                    existingColorOffset = lineToColor.length - chalk.stripColor(lineToColor).length,
+
+                    colStart = astNode.loc.first_column + existingColorOffset,
+                    colEnd = astNode.loc.last_column + existingColorOffset;
 
                 accClone[lineIndex] =
                     lineToColor.slice(0, colStart) +
-                    colorFn(lineToColor.slice(colStart, colEnd + 1)) +
-                    lineToColor.slice(colEnd + 1);
+                    colorFn(lineToColor.slice(colStart, colEnd)) +
+                    lineToColor.slice(colEnd);
 
                 logger.debug({
+                    astNode: astNode,
+                    existingColorOffset: existingColorOffset,
                     original: acc[lineIndex],
                     colored: accClone[lineIndex],
                     lineIndex: lineIndex,
