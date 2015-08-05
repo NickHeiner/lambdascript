@@ -35,6 +35,14 @@ function getHighlightedCode(lscAst: ILambdaScriptAstNode, lambdaScriptCode: stri
                         loc = astNode.type === 'StringRegexLookup' ?
                             (<IStringRegexLookup> astNode).regexLoc : astNode.loc;
 
+                    /**
+                     * Originally, I just colored as soon as I found a node. However, this does not work,
+                     * because other coloring may have occurred on the line already, which will offset our
+                     * column indices. And it is not sufficient just to drop all color from the line and
+                     * see what the length difference is, because some of that color could be *after* our
+                     * column indices and thus irrelevant. To solve this, we will gather all the colorings
+                     * we want to do, and then apply them in sorted order. This makes the offset caclulation trivial.
+                     */
                     return colorActions.concat({
                         // I don't know why but jison does not 0-index the line number.
                         lineIndex: loc.first_line - 1,
