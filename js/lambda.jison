@@ -50,7 +50,8 @@ e
         {
             $$ = {
                 type: 'Identifier',
-                name: $1
+                name: $1,
+                loc: @$
             };
         }
     | e e
@@ -67,7 +68,8 @@ e
                 type: 'Boolean',
                 left: $2,
                 operator: $3,
-                right: $4
+                right: $4,
+                booleanLoc: @BOOLEAN_OPERATOR
             }
         }
     | e STRING_REGEX_LOOKUP
@@ -75,14 +77,16 @@ e
             $$ = {
                 type: 'StringRegexLookup',
                 source: $1,
-                regex: $2
+                regex: $2,
+                regexLoc: @STRING_REGEX_LOOKUP
             };
         }
     | STRING_START (STRING_CHAR|ESCAPED_QUOTE)* STRING_END
         {
             $$ = {
                 type: 'Literal',
-                value: $2.join('')
+                value: $2.join(''),
+                loc: @$
             };
         }
     | FUNC_DECL_START IDENTIFIER IDENTIFIER FUNC_DOT e FUNC_END
@@ -91,7 +95,8 @@ e
                 type: 'FunctionDeclaration',
                 funcName: $2,
                 argName: $3,
-                body: $5
+                body: $5,
+                funcNameLoc: @2
             };
         }
     | e EXPRESSION_SEP e

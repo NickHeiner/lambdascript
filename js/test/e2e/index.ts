@@ -146,3 +146,25 @@ test('lambdascript compiler in js', function(t: any) {
         });
     });
 });
+
+test('lsc-highlight', function(t: any) {
+    t.plan(1);
+
+    return lsc.highlight(path.join(__dirname, '..', 'fixtures', 'sample.lambda'))
+        .then(function(highlightedCode: string) {
+            const expected = `﻿λ [36misPalindrome[39m str .
+	< <[35mstr[39m [34mis[39m [33m""[39m> [34mor[39m <
+		<[35mstr[39m[32m[/^(.)/][39m [34mis[39m [35mstr[39m[32m[/.*(.)$/][39m >
+		[34mand[39m < [35misPalindrome[39m [35mstr[39m[32m[/^.(.*)./][39m >
+	> >};
+
+< [35mprint[39m <[35misPalindrome[39m [33m"not a palindrome"[39m> >;
+[35mprint[39m <[35misPalindrome[39m [33m"racecar"[39m>
+`;
+
+            t.equal(highlightedCode, expected, 'code is highlighted correctly');
+        }, function(err: any) {
+            t.error(err);
+            throw err;
+        });
+});

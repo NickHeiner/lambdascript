@@ -2,22 +2,29 @@
 
 'use strict';
 
+import './types';
 import astToJsAst = require('./lib/ast-to-js-ast');
 import withPrelude = require('./lib/with-prelude');
+import getHighlightedCode = require('./lib/get-highlighted-code');
 
 const lambda = require('./lambda'),
     logger = require('./util/logger'),
     escodegen = require('escodegen'),
     qFs = require('q-io/fs');
 
+function getLscAst(lambdaScriptCode: string): ILambdaScriptAstNode {
+    logger.debug({lambdaScriptCode: lambdaScriptCode}, 'Parsing LambdaScript code');
+
+    const lscAst = lambda.parser.parse(lambdaScriptCode);
+    logger.debug({lscAst: lscAst}, 'Parsed LambdaScript code');
+
+    return lscAst;
+}
+
 function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
     return qFs.read(inputLambdaScriptFile).then(function(lambdaScriptCode: string) {
-        logger.debug({lambdaScriptCode: lambdaScriptCode}, 'Read LambdaScript code from file system');
-
-        const jisonOutput = lambda.parser.parse(lambdaScriptCode);
-        logger.debug({jisonOutput: jisonOutput}, 'Parsed LambdaScript code');
-
-        const jsAst = astToJsAst(jisonOutput);
+        const lscAst = getLscAst(lambdaScriptCode),
+            jsAst = astToJsAst(lscAst);
         logger.debug({jsAst: jsAst}, 'Converted LambdaScript AST to JS AST');
 
         const js = escodegen.generate(jsAst);
@@ -30,4 +37,12 @@ function lsc(inputLambdaScriptFile: string, outputJsFile: string) {
     });
 }
 
+function lscHighlight(inputLambdaScriptFile: string): Q.IPromise<string> {
+    return qFs.read(inputLambdaScriptFile).then(function(lambdaScriptCode: string) {
+        const lscAst = getLscAst(lambdaScriptCode);
+        return getHighlightedCode(lscAst, lambdaScriptCode);
+    });
+}
+
 module.exports = lsc;
+module.exports.highlight = lscHighlight;
